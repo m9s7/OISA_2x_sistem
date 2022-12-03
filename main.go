@@ -17,5 +17,8 @@ func main() {
 
 	fmt.Println(soccerbet.GetSportsCurrentlyOffered())
 
-	soccerbet.Scrape("Fudbal")
+	//soccerbet.Scrape("Fudbal")
+	//soccerbet.Scrape("Košarka")
+	soccerbet.Scrape("Tenis")
+
 }

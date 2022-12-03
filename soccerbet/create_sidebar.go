@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func CreateSidebar(masterData map[string]interface{}, sportNameByIDMap map[int]string) map[string][]interface{} {
+func createSidebar(masterData map[string]interface{}, sportNameByIDMap map[int]string) map[string][]interface{} {
 	response := requests_to_server.GetSidebarLeagueIDs()
 	for response == nil {
 		fmt.Println("Stuck on soccerbet request: GetSidebarLeagueIDs")

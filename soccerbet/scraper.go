@@ -18,7 +18,7 @@ func GetSportsCurrentlyOffered() []string {
 	}
 
 	sportNameByIDMap := server_response_parsers.GetSportNameByIDMap(masterData)
-	sidebar := CreateSidebar(masterData, sportNameByIDMap)
+	sidebar := createSidebar(masterData, sportNameByIDMap)
 
 	var sidebarKeys []string
 	for key := range sidebar {
@@ -37,24 +37,37 @@ func Scrape(sportName string) {
 		masterData = requests_to_server.GetMasterData()
 	}
 
+	// Make this shit global somehow, init on startup, refresh once in a while 'n'shit...
 	betgameByIdMap := server_response_parsers.GetBetgameByIdMap(masterData)
 	betgameOutcomeByIdMap := server_response_parsers.GetBetgameOutcomeByIdMap(masterData)
 	betgameGroupByIdMap := server_response_parsers.GetBetgameGroupByIdMap(masterData)
-
 	sportNameByIDMap := server_response_parsers.GetSportNameByIDMap(masterData)
-	sidebar := CreateSidebar(masterData, sportNameByIDMap)
+
+	sidebar := createSidebar(masterData, sportNameByIDMap)
 
 	var sidebarKeys []string
 	for key := range sidebar {
 		sidebarKeys = append(sidebarKeys, key)
 	}
 	if !utility.IsElInSliceSTR(sportName, sidebarKeys) {
-		fmt.Println(sportName, " not currently offered at soccerbet")
+		fmt.Println(sportName, "not currently offered at soccerbet")
 		return
 	}
 
 	if sportName == "Fudbal" {
 		odds := odds_parsers.SoccerOddsParser(sidebar[sportName], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
+		for _, el := range odds {
+			fmt.Println(el)
+		}
+	}
+	if sportName == "Košarka" {
+		odds := odds_parsers.BasketballOddsParser(sidebar[sportName], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
+		for _, el := range odds {
+			fmt.Println(el)
+		}
+	}
+	if sportName == "Tenis" {
+		odds := odds_parsers.TennisOddsParser(sidebar[sportName], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
 		for _, el := range odds {
 			fmt.Println(el)
 		}
