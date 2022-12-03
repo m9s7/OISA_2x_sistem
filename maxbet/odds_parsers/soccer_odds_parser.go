@@ -86,7 +86,7 @@ func GetSoccerOdds(matchIDs []int) [][8]string {
 				}
 				tipCombos := [3][2]string{{"GG", "NG"}, {"GG1", "NG1"}, {"GG2", "NG2"}}
 				for _, combo := range tipCombos {
-					if !utility.IsInSlice(combo[0], tipsKeys) || !utility.IsInSlice(combo[1], tipsKeys) {
+					if !utility.IsElInSliceSTR(combo[0], tipsKeys) || !utility.IsElInSliceSTR(combo[1], tipsKeys) {
 						continue
 					}
 					e[utility.Tip1Name] = combo[0]
@@ -105,7 +105,7 @@ func GetSoccerOdds(matchIDs []int) [][8]string {
 				goloviSubgamesKeys[i] = k
 				i++
 			}
-			if !utility.IsInSlice(subgame["name"].(string), goloviSubgamesKeys) {
+			if !utility.IsElInSliceSTR(subgame["name"].(string), goloviSubgamesKeys) {
 				continue
 			}
 

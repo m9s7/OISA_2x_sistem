@@ -24,7 +24,7 @@ func Get2outcomeOdds(matchIDs []int, subgameNames []string) [][8]string {
 
 		for _, subgame := range match["odBetPickGroups"].([]interface{}) {
 			subgame := subgame.(map[string]interface{})
-			if subgameName, ok := subgame["name"]; !ok || !utility.IsInSlice(subgameName.(string), subgameNames) {
+			if subgameName, ok := subgame["name"]; !ok || !utility.IsElInSliceSTR(subgameName.(string), subgameNames) {
 				continue
 			}
 			if len(subgame["tipTypes"].([]interface{})) != 2 {

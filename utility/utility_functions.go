@@ -1,14 +1,5 @@
 package utility
 
-func IsInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
-
 func IndexOf(s string, list []string) int {
 	index := -1
 	for i, el := range list {
@@ -18,4 +9,22 @@ func IndexOf(s string, list []string) int {
 		}
 	}
 	return index
+}
+
+func IsElInSliceINT(el int, list []int) bool {
+	for _, e := range list {
+		if e == el {
+			return true
+		}
+	}
+	return false
+}
+
+func IsElInSliceSTR(el string, list []string) bool {
+	for _, e := range list {
+		if el == e {
+			return true
+		}
+	}
+	return false
 }
