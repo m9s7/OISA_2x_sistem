@@ -64,7 +64,7 @@ func SoccerOddsParser(
 								t2Code,
 								fmt.Sprintf("%f", t2Val),
 							}
-							e := mergeE1E2(e1, e2)
+							e := utility.MergeE1E2(e1, e2)
 							export = append(export, e)
 						}
 					}
@@ -84,7 +84,7 @@ func SoccerOddsParser(
 								t2Code,
 								fmt.Sprintf("%f", t2Val),
 							}
-							e := mergeE1E2(e1, e2)
+							e := utility.MergeE1E2(e1, e2)
 							export = append(export, e)
 						}
 					}
@@ -103,7 +103,7 @@ func SoccerOddsParser(
 								t2Code,
 								fmt.Sprintf("%f", t2Val),
 							}
-							e := mergeE1E2(e1, e2)
+							e := utility.MergeE1E2(e1, e2)
 							export = append(export, e)
 						}
 					}

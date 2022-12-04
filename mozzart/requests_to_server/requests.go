@@ -71,7 +71,7 @@ func GetSidebarSportsAndLeagues() []map[string]interface{} {
 	return resultJSON
 }
 
-func getAllSubgames() map[string]interface{} {
+func GetAllSubgames() map[string]interface{} {
 
 	url := "https://www.mozzartbet.com/getAllGames"
 
@@ -113,7 +113,7 @@ func getAllSubgames() map[string]interface{} {
 	return resultJSON
 }
 
-func getMatchIDs(sportID int) map[string]interface{} {
+func GetMatchIDs(sportID int) map[string]interface{} {
 
 	url := "https://www.mozzartbet.com/betOffer2"
 
@@ -229,12 +229,16 @@ func getOddsForLimitedNumOfMatches(matchIDs []int, subgameIDs []int) []map[strin
 	return resultJSON
 }
 
-func getOdds(matchIDs []int, subgameIDs []int) []map[string]interface{} {
+func GetOdds(matchIDs []int, subgameIDs []int) []map[string]interface{} {
 	limit := 49
 
 	var result []map[string]interface{}
 
 	for len(matchIDs) > 0 {
+		if len(matchIDs) <= limit {
+			limit = len(matchIDs)
+		}
+
 		matchIDsBatch := matchIDs[:limit]
 		matchIDs = matchIDs[limit:]
 

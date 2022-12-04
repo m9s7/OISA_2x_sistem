@@ -80,7 +80,7 @@ func BasketballOddsParser(
 			}
 
 			for _, e2 := range exportMatchHelper {
-				e := mergeE1E2(e1, *e2)
+				e := utility.MergeE1E2(e1, *e2)
 				export = append(export, e)
 			}
 			matchesScrapedCounter++
