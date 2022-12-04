@@ -1,31 +1,36 @@
 package main
 
 import (
-	"OISA_2x_sistem/maxbet"
-	"OISA_2x_sistem/mozzart"
-	"OISA_2x_sistem/soccerbet"
+	"OISA_2x_sistem/merkurxtip"
 	"fmt"
 )
 
 func main() {
-	fmt.Println(maxbet.GetSportsCurrentlyOffered())
+	//fmt.Println(maxbet.GetSportsCurrentlyOffered())
+	//
+	//maxbet.Scrape("Fudbal")
+	//maxbet.Scrape("Košarka")
+	//maxbet.Scrape("Tenis")
+	//maxbet.Scrape("Stoni Tenis")
+	//maxbet.Scrape("eSport")
+	//
+	//fmt.Println(soccerbet.GetSportsCurrentlyOffered())
+	//
+	//soccerbet.Scrape("Fudbal")
+	//soccerbet.Scrape("Košarka")
+	//soccerbet.Scrape("Tenis")
+	//
+	//fmt.Println(mozzart.GetSportsCurrentlyOffered())
+	//
+	//mozzart.Scrape("Tenis")
+	//mozzart.Scrape("Košarka")
+	//mozzart.Scrape("Fudbal")
 
-	maxbet.Scrape("Fudbal")
-	maxbet.Scrape("Košarka")
-	maxbet.Scrape("Tenis")
-	maxbet.Scrape("Stoni Tenis")
-	maxbet.Scrape("eSport")
+	fmt.Println(merkurxtip.GetSportsCurrentlyOffered())
 
-	fmt.Println(soccerbet.GetSportsCurrentlyOffered())
-
-	soccerbet.Scrape("Fudbal")
-	soccerbet.Scrape("Košarka")
-	soccerbet.Scrape("Tenis")
-
-	fmt.Println(mozzart.GetSportsCurrentlyOffered())
-
-	mozzart.Scrape("Tenis")
-	mozzart.Scrape("Košarka")
-	mozzart.Scrape("Fudbal")
-
+	//response := requests_to_server.GetSidebarSports()
+	//
+	//for k, _ := range response {
+	//	fmt.Println(k)
+	//}
 }
