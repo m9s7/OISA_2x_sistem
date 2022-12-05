@@ -1,35 +1,34 @@
-package server_response_parsers
+package requests_to_server
 
 import (
-	"OISA_2x_sistem/mozzart/requests_to_server"
 	"fmt"
 )
 
 func GetSidebarSportsAndLeaguesBlocking() []map[string]interface{} {
-	response := requests_to_server.GetSidebarSportsAndLeagues()
+	response := GetSidebarSportsAndLeagues()
 	for response == nil {
 		fmt.Println("Mozzart: Stuck on GetSidebarSportsAndLeagues()...")
-		response = requests_to_server.GetSidebarSportsAndLeagues()
+		response = GetSidebarSportsAndLeagues()
 	}
 	return response
 }
 
 func GetMatchIDsBlocking(sportID int) map[string]interface{} {
-	response := requests_to_server.GetMatchIDs(sportID)
+	response := GetMatchIDs(sportID)
 	for response == nil {
 		fmt.Println("Mozzart: Stuck on GetMatchIDs()...", "Match id: ", sportID)
-		response = requests_to_server.GetMatchIDs(sportID)
+		response = GetMatchIDs(sportID)
 	}
 	return response
 }
 
 func GetOddsBlocking(matchIDs []int, subgameIDs []int) []map[string]interface{} {
-	response := requests_to_server.GetOdds(matchIDs, subgameIDs)
+	response := GetOdds(matchIDs, subgameIDs)
 	for response == nil {
 		fmt.Println("Mozzart: Stuck on GetOdds(matchIDs, subgameIDs)...")
 		fmt.Println("Match IDs: ", matchIDs)
 		fmt.Println("Subgame IDs: ", subgameIDs)
-		response = requests_to_server.GetOdds(matchIDs, subgameIDs)
+		response = GetOdds(matchIDs, subgameIDs)
 	}
 	return response
 }

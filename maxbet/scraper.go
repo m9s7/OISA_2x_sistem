@@ -49,30 +49,33 @@ func Scrape(sport string) {
 	}
 	matchIDs := parseGetMatchesIDsResponse(responseJson)
 
-	var scrapedData [][8]string
-	if sport == "Fudbal" {
-		scrapedData = odds_parsers.GetSoccerOdds(matchIDs)
-	}
-	if sport == "Košarka" {
-		scrapedData = odds_parsers.Get2outcomeOdds(matchIDs, []string{"Konačan ishod sa produžecima"})
-	}
-	if sport == "Tenis" {
-		scrapedData = odds_parsers.Get2outcomeOdds(matchIDs, []string{"Konačan ishod", "Prvi set", "Drugi set", "Tie Break", "Tie Break prvi set"})
-	}
-	if sport == "eSport" {
-		scrapedData = odds_parsers.Get2outcomeOdds(matchIDs, []string{"Konačan ishod"})
-	}
-	if sport == "Stoni Tenis" {
-		scrapedData = odds_parsers.Get2outcomeOdds(matchIDs, []string{"Konačan ishod", "Prvi set"})
+	var odds [][8]string
+
+	switch sport {
+	case "Tenis":
+		odds = odds_parsers.Get2outcomeOdds(matchIDs, []string{"Konačan ishod", "Prvi set", "Drugi set", "Tie Break", "Tie Break prvi set"})
+	case "Košarka":
+		odds = odds_parsers.Get2outcomeOdds(matchIDs, []string{"Konačan ishod sa produžecima"})
+	case "Fudbal":
+		odds = odds_parsers.GetSoccerOdds(matchIDs)
+		//case "eSport":
+		//	odds = odds_parsers.Get2outcomeOdds(matchIDs, []string{"Konačan ishod"})
+		//case "Stoni Tenis":
+		//	odds = odds_parsers.Get2outcomeOdds(matchIDs, []string{"Konačan ishod", "Prvi set"})
+	default:
+		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")
 	}
 
-	// i onda jos ovo...
+	for _, el := range odds {
+		fmt.Println(el)
+	}
+
 	// Standardize tip names
 	// print_to_file(df.to_string(index=False), f"maxb_{str(sport_standard_name)}.txt")
 	// export_for_merge(df, f"maxb_{str(sport_standard_name)}.txt")
 
-	writeCSVtoFile(scrapedData, "maxb_"+sport)
-	log.Printf("--- %s seconds ---", time.Since(startTime))
+	//writeCSVtoFile(odds, "maxb_"+sport)
+	fmt.Printf("--- %s seconds ---", time.Since(startTime))
 }
 
 // Returns a dict { key = sport_name, val = [LeagueBetId] }

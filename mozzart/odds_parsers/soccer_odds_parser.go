@@ -1,7 +1,7 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/mozzart/server_response_parsers"
+	"OISA_2x_sistem/mozzart/requests_to_server"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"strconv"
@@ -13,7 +13,7 @@ func SoccerOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [
 	matchesScrapedCounter := 0
 	var export [][8]string
 
-	matchesResponse := server_response_parsers.GetMatchIDsBlocking(sportID)
+	matchesResponse := requests_to_server.GetMatchIDsBlocking(sportID)
 	exportHelp := initExportHelp(matchesResponse["matches"].([]interface{}))
 
 	var exportHelpKeys []int
@@ -23,7 +23,7 @@ func SoccerOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [
 
 	subgameIDs := getSoccerSubgameIDs(allSubgamesResponse[strconv.Itoa(sportID)])
 	//fmt.Println(subgameIDs)
-	odds := server_response_parsers.GetOddsBlocking(exportHelpKeys, subgameIDs)
+	odds := requests_to_server.GetOddsBlocking(exportHelpKeys, subgameIDs)
 
 	for _, o := range odds {
 

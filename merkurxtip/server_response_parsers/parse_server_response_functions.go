@@ -2,15 +2,15 @@ package server_response_parsers
 
 func ParseGetSidebarSports(response map[string]interface{}) map[string]string {
 
-	sidebarSportsIDsByName := map[string]string{}
+	sidebarSportIDByName := map[string]string{}
 	for _, sport := range response["categories"].([]interface{}) {
 		sport := sport.(map[string]interface{})
-		sidebarSportsIDsByName[sport["name"].(string)] = sport["id"].(string)
+		sidebarSportIDByName[sport["name"].(string)] = sport["id"].(string)
 	}
-	return sidebarSportsIDsByName
+	return sidebarSportIDByName
 }
 
-func ParseGetSidebarLeagues(response map[string]interface{}) []string {
+func ParseGetSidebarGroups(response map[string]interface{}) []string {
 	var groupIDs []string
 	for _, group := range response["categories"].([]interface{}) {
 		group := group.(map[string]interface{})

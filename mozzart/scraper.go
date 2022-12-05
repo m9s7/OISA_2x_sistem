@@ -5,12 +5,11 @@ import (
 	"OISA_2x_sistem/mozzart/requests_to_server"
 	"OISA_2x_sistem/mozzart/server_response_parsers"
 	"fmt"
-	"log"
 	"time"
 )
 
 func GetSportsCurrentlyOffered() []string {
-	response := server_response_parsers.GetSidebarSportsAndLeaguesBlocking()
+	response := requests_to_server.GetSidebarSportsAndLeaguesBlocking()
 
 	var sports []string
 	for _, val := range response {
@@ -23,7 +22,7 @@ func GetSportsCurrentlyOffered() []string {
 func Scrape(sport string) [][8]string {
 	startTime := time.Now()
 
-	response := server_response_parsers.GetSidebarSportsAndLeaguesBlocking()
+	response := requests_to_server.GetSidebarSportsAndLeaguesBlocking()
 
 	getIDByNameMap := server_response_parsers.ParseGetSidebarSportsAndLeagues(response)
 
@@ -48,6 +47,8 @@ func Scrape(sport string) [][8]string {
 		odds = odds_parsers.BasketballOddsParser(getIDByNameMap[sport], allSubgamesResponse)
 	case "Fudbal":
 		odds = odds_parsers.SoccerOddsParser(getIDByNameMap[sport], allSubgamesResponse)
+	default:
+		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")
 	}
 
 	for _, el := range odds {
@@ -64,6 +65,6 @@ func Scrape(sport string) [][8]string {
 	//
 	//print_to_file(df.to_string(index=False), f"mozz_{str(sport.toStandardName())}.txt")
 	//export_for_merge(df, f"mozz_{str(sport.toStandardName())}.txt")
-	log.Printf("--- %s seconds ---", time.Since(startTime))
+	fmt.Printf("--- %s seconds ---", time.Since(startTime))
 	return odds
 }

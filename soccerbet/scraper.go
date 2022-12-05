@@ -6,7 +6,6 @@ import (
 	"OISA_2x_sistem/soccerbet/server_response_parsers"
 	"OISA_2x_sistem/utility"
 	"fmt"
-	"log"
 	"time"
 )
 
@@ -27,9 +26,9 @@ func GetSportsCurrentlyOffered() []string {
 	return sidebarKeys
 }
 
-func Scrape(sportName string) {
+func Scrape(sport string) {
 	startTime := time.Now()
-	fmt.Println("...scraping soccerbet - ", sportName)
+	fmt.Println("...scraping soccerbet - ", sport)
 
 	masterData := requests_to_server.GetMasterData()
 	for masterData == nil {
@@ -37,7 +36,6 @@ func Scrape(sportName string) {
 		masterData = requests_to_server.GetMasterData()
 	}
 
-	// Make this shit global somehow, init on startup, refresh once in a while 'n'shit...
 	betgameByIdMap := server_response_parsers.GetBetgameByIdMap(masterData)
 	betgameOutcomeByIdMap := server_response_parsers.GetBetgameOutcomeByIdMap(masterData)
 	betgameGroupByIdMap := server_response_parsers.GetBetgameGroupByIdMap(masterData)
@@ -49,29 +47,27 @@ func Scrape(sportName string) {
 	for key := range sidebar {
 		sidebarKeys = append(sidebarKeys, key)
 	}
-	if !utility.IsElInSliceSTR(sportName, sidebarKeys) {
-		fmt.Println(sportName, "not currently offered at soccerbet")
+	if !utility.IsElInSliceSTR(sport, sidebarKeys) {
+		fmt.Println(sport, "not currently offered at soccerbet")
 		return
 	}
 
-	if sportName == "Fudbal" {
-		odds := odds_parsers.SoccerOddsParser(sidebar[sportName], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
-		for _, el := range odds {
-			fmt.Println(el)
-		}
+	var odds [][8]string
+
+	switch sport {
+	case "Tenis":
+		odds = odds_parsers.TennisOddsParser(sidebar[sport], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
+	case "Košarka":
+		odds = odds_parsers.BasketballOddsParser(sidebar[sport], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
+	case "Fudbal":
+		odds = odds_parsers.SoccerOddsParser(sidebar[sport], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
+	default:
+		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")
 	}
-	if sportName == "Košarka" {
-		odds := odds_parsers.BasketballOddsParser(sidebar[sportName], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
-		for _, el := range odds {
-			fmt.Println(el)
-		}
-	}
-	if sportName == "Tenis" {
-		odds := odds_parsers.TennisOddsParser(sidebar[sportName], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
-		for _, el := range odds {
-			fmt.Println(el)
-		}
+	
+	for _, el := range odds {
+		fmt.Println(el)
 	}
 
-	log.Printf("--- %s seconds ---", time.Since(startTime))
+	fmt.Printf("--- %s seconds ---", time.Since(startTime))
 }
