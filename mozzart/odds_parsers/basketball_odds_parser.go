@@ -7,10 +7,10 @@ import (
 	"strconv"
 )
 
-func BasketballOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [][8]string {
+func BasketballOddsParser(sportID int, allSubgamesResponse map[string]interface{}) []*[8]string {
 
 	matchesScrapedCounter := 0
-	var export [][8]string
+	var export []*[8]string
 
 	matchesResponse := requests_to_server.GetMatchIDsBlocking(sportID)
 	exportHelp := initExportHelp(matchesResponse["matches"].([]interface{}))
@@ -71,7 +71,7 @@ func BasketballOddsParser(sportID int, allSubgamesResponse map[string]interface{
 		}
 
 		for _, e2 := range exportMatchHelper {
-			e := utility.MergeE1E2(e1, *e2)
+			e := utility.MergeE1E2(e1, e2)
 			export = append(export, e)
 		}
 		matchesScrapedCounter++

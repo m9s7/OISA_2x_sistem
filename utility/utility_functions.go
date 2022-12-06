@@ -29,13 +29,11 @@ func IsElInSliceSTR(el string, list []string) bool {
 	return false
 }
 
-func MergeE1E2(list1 [4]string, list2 [4]string) [8]string {
-	var resultList [8]string
-	for i, el := range list1 {
-		resultList[i] = el
-	}
-	for i, el := range list2 {
-		resultList[4+i] = el
+func MergeE1E2(list1 *[4]string, list2 *[4]string) *[8]string {
+	var resultList = &[8]string{}
+	for i := 0; i < 4; i++ {
+		resultList[i] = list1[i]
+		resultList[i+4] = list2[i]
 	}
 	return resultList
 }

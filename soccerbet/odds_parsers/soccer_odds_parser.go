@@ -20,9 +20,10 @@ func SoccerOddsParser(
 	betgameByIdMap map[int]map[string]interface{},
 	betgameOutcomeByIdMap map[int]map[string]interface{},
 	betgameGroupByIdMap map[int]map[string]interface{},
-) [][8]string {
+) []*[8]string {
+
 	matchesScrapedCounter := 0
-	var export [][8]string
+	var export []*[8]string
 
 	for _, league := range sidebarLeagues {
 		league := league.(map[string]interface{})
@@ -36,7 +37,7 @@ func SoccerOddsParser(
 		matchInfoList := server_response_parsers.ParseGetLeagueMatchesInfo(response)
 
 		for _, match := range matchInfoList {
-			e1 := [4]string{match["kickoff"].(string), league["Name"].(string), match["home"].(string), match["away"].(string)}
+			e1 := &[4]string{match["kickoff"].(string), league["Name"].(string), match["home"].(string), match["away"].(string)}
 
 			matchID := int(match["match_id"].(float64))
 			tip1, tip2, err := parseMatchTips(matchID, betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
@@ -58,14 +59,13 @@ func SoccerOddsParser(
 						t2Code := t2Key[2]
 
 						if t2Game == t1Game && t2Subgame == "1+" {
-							e2 := [4]string{
+							e2 := &[4]string{
 								t1Code,
 								fmt.Sprintf("%f", t1Val),
 								t2Code,
 								fmt.Sprintf("%f", t2Val),
 							}
-							e := utility.MergeE1E2(e1, e2)
-							export = append(export, e)
+							export = append(export, utility.MergeE1E2(e1, e2))
 						}
 					}
 				}
@@ -78,14 +78,13 @@ func SoccerOddsParser(
 						t2Code := t2Key[2]
 
 						if t2Game == t1Game && t2Subgame == strconv.Itoa(x+1)+"+" {
-							e2 := [4]string{
+							e2 := &[4]string{
 								t1Code,
 								fmt.Sprintf("%f", t1Val),
 								t2Code,
 								fmt.Sprintf("%f", t2Val),
 							}
-							e := utility.MergeE1E2(e1, e2)
-							export = append(export, e)
+							export = append(export, utility.MergeE1E2(e1, e2))
 						}
 					}
 				}
@@ -97,14 +96,13 @@ func SoccerOddsParser(
 						t2Code := t2Key[2]
 
 						if t2Game == t1Game && t2Subgame == "NG" {
-							e2 := [4]string{
+							e2 := &[4]string{
 								t1Code,
 								fmt.Sprintf("%f", t1Val),
 								t2Code,
 								fmt.Sprintf("%f", t2Val),
 							}
-							e := utility.MergeE1E2(e1, e2)
-							export = append(export, e)
+							export = append(export, utility.MergeE1E2(e1, e2))
 						}
 					}
 				}

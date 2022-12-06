@@ -6,17 +6,17 @@ import (
 	"fmt"
 )
 
-func SoccerOddsParser(matchIDs []int) [][8]string {
+func SoccerOddsParser(matchIDs []int) []*[8]string {
 
 	matchesScrapedCounter := 0
-	var export [][8]string
+	var export []*[8]string
 
 	tipTypeCodePairs, leftovers := getHardcodedTipTypeCodes()
 
 	for _, matchID := range matchIDs {
 		match := requests_to_server.GetMatchOdds(matchID)
 
-		e1 := [4]string{
+		e1 := &[4]string{
 			fmt.Sprintf("%.0f", match["kickOffTime"].(float64)),
 			match["leagueName"].(string),
 			match["home"].(string),
@@ -35,11 +35,10 @@ func SoccerOddsParser(matchIDs []int) [][8]string {
 				continue
 			}
 
-			e2 := [4]string{
+			export = append(export, utility.MergeE1E2(e1, &[4]string{
 				m["tip1Name"], fmt.Sprintf("%f", tip1Val.(float64)),
 				m["tip2Name"], fmt.Sprintf("%f", tip2Val.(float64)),
-			}
-			export = append(export, utility.MergeE1E2(e1, e2))
+			}))
 		}
 
 		for _, m := range leftovers {
@@ -47,7 +46,7 @@ func SoccerOddsParser(matchIDs []int) [][8]string {
 			if !ok {
 				continue
 			}
-			export = append(export, utility.MergeE1E2(e1, [4]string{
+			export = append(export, utility.MergeE1E2(e1, &[4]string{
 				m["tip1Name"], "0.0",
 				m["tip2Name"], fmt.Sprintf("%f", tip2Val.(float64)),
 			}))

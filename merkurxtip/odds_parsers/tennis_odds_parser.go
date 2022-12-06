@@ -6,10 +6,10 @@ import (
 	"fmt"
 )
 
-func TennisOddsParser(matchIDs []int) [][8]string {
+func TennisOddsParser(matchIDs []int) []*[8]string {
 
 	matchesScrapedCounter := 0
-	var export [][8]string
+	var export []*[8]string
 
 	// We'll see how hard-coding goes I doubt they change allSubgamesJSON too often if ever
 	// maybe I can make a call each time and just check if something changed
@@ -40,10 +40,8 @@ func TennisOddsParser(matchIDs []int) [][8]string {
 	for _, matchID := range matchIDs {
 		match := requests_to_server.GetMatchOdds(matchID)
 
-		e1 := [4]string{
+		e1 := &[4]string{
 			fmt.Sprintf("%.0f", match["kickOffTime"].(float64)),
-			//TODO: remove EVERYWHERE
-			//strconv.Itoa(int(match["kickOffTime"].(float64))), // this slows down the program soo much
 			match["leagueName"].(string),
 			match["home"].(string),
 			match["away"].(string),
@@ -61,13 +59,11 @@ func TennisOddsParser(matchIDs []int) [][8]string {
 				continue
 			}
 
-			e2 := [4]string{
+			export = append(export, utility.MergeE1E2(e1, &[4]string{
 				m["tip1Name"], fmt.Sprintf("%f", tip1Val.(float64)),
 				m["tip2Name"], fmt.Sprintf("%f", tip2Val.(float64)),
-			}
-			export = append(export, utility.MergeE1E2(e1, e2))
+			}))
 		}
-
 		matchesScrapedCounter++
 	}
 

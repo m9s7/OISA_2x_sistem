@@ -57,20 +57,21 @@ var goloviSubgames = map[string]map[string]interface{}{
 	},
 }
 
-func GetSoccerOdds(matchIDs []int) [][8]string {
+func GetSoccerOdds(matchIDs []int) []*[8]string {
 	matchesScrapedCounter := 0
-	export := make([][8]string, 0)
+	var export []*[8]string
 	for _, matchID := range matchIDs {
 		match := requests_to_server.GetMatchData(matchID)
 		if match == nil {
 			continue
 		}
-		matchesScrapedCounter++
-		var e [8]string
-		e[utility.Kickoff] = strconv.Itoa(int(match["kickOffTime"].(float64)))
-		e[utility.League] = match["leagueName"].(string)
-		e[utility.Team1] = match["home"].(string)
-		e[utility.Team2] = match["away"].(string)
+
+		e1 := &[4]string{
+			fmt.Sprintf("%.0f", match["kickOffTime"].(float64)),
+			match["leagueName"].(string),
+			match["home"].(string),
+			match["away"].(string),
+		}
 
 		for _, subgame := range match["odBetPickGroups"].([]interface{}) {
 			subgame := subgame.(map[string]interface{})
@@ -85,15 +86,17 @@ func GetSoccerOdds(matchIDs []int) [][8]string {
 					tipsKeys = append(tipsKeys, tip["name"].(string))
 				}
 				tipCombos := [3][2]string{{"GG", "NG"}, {"GG1", "NG1"}, {"GG2", "NG2"}}
-				for _, combo := range tipCombos {
-					if !utility.IsElInSliceSTR(combo[0], tipsKeys) || !utility.IsElInSliceSTR(combo[1], tipsKeys) {
+				for _, tipCombo := range tipCombos {
+					if !utility.IsElInSliceSTR(tipCombo[0], tipsKeys) || !utility.IsElInSliceSTR(tipCombo[1], tipsKeys) {
 						continue
 					}
-					e[utility.Tip1Name] = combo[0]
-					e[utility.Tip1Value] = fmt.Sprintf("%f", tipsVals[combo[0]])
-					e[utility.Tip2Name] = combo[1]
-					e[utility.Tip2Value] = fmt.Sprintf("%f", tipsVals[combo[1]])
-					export = append(export, e)
+					if tipsVals[tipCombo[0]] == 0 && tipsVals[tipCombo[1]] == 0 {
+						continue
+					}
+					export = append(export, utility.MergeE1E2(e1, &[4]string{
+						tipCombo[0], fmt.Sprintf("%f", tipsVals[tipCombo[0]]),
+						tipCombo[1], fmt.Sprintf("%f", tipsVals[tipCombo[1]]),
+					}))
 				}
 				continue
 			}
@@ -126,14 +129,17 @@ func GetSoccerOdds(matchIDs []int) [][8]string {
 				}
 
 				TT := subgame["tipTypes"].([]interface{})
-				tip1Value := TT[utility.IndexOf(tip1, tips)].(map[string]interface{})["value"]
-				tip2Value := TT[indexOfTip2InTips].(map[string]interface{})["value"]
+				tip1Value := TT[utility.IndexOf(tip1, tips)].(map[string]interface{})["value"].(float64)
+				tip2Value := TT[indexOfTip2InTips].(map[string]interface{})["value"].(float64)
 
-				e[utility.Tip1Name] = tip1
-				e[utility.Tip1Value] = fmt.Sprintf("%f", tip1Value.(float64))
-				e[utility.Tip2Name] = tip2
-				e[utility.Tip2Value] = fmt.Sprintf("%f", tip2Value.(float64))
-				export = append(export, e)
+				if tip1Value == 0 && tip2Value == 0 {
+					continue
+				}
+
+				export = append(export, utility.MergeE1E2(e1, &[4]string{
+					tip1, fmt.Sprintf("%f", tip1Value),
+					tip2, fmt.Sprintf("%f", tip2Value),
+				}))
 			}
 
 			// Process T0 and 1+ combo
@@ -146,23 +152,29 @@ func GetSoccerOdds(matchIDs []int) [][8]string {
 				continue
 			}
 			TT := subgame["tipTypes"].([]interface{})
-			tip1Value := TT[tip1IndexInTips].(map[string]interface{})["value"]
+			tip1Value := TT[tip1IndexInTips].(map[string]interface{})["value"].(float64)
 
 			// get tip2 value
 			tip2IndexInTips := utility.IndexOf(tip2, tips)
 			if tip1Value == 0 || tip2IndexInTips == -1 {
 				continue
 			}
-			tip2Value := TT[tip2IndexInTips].(map[string]interface{})["value"]
-			e[utility.Tip1Name] = tip1
-			e[utility.Tip1Value] = fmt.Sprintf("%f", tip1Value.(float64))
-			e[utility.Tip2Name] = tip2
-			e[utility.Tip2Value] = fmt.Sprintf("%f", tip2Value.(float64))
+			tip2Value := TT[tip2IndexInTips].(map[string]interface{})["value"].(float64)
 
-			export = append(export, e)
+			if tip1Value == 0 && tip2Value == 0 {
+				continue
+			}
+
+			export = append(export, utility.MergeE1E2(e1, &[4]string{
+				tip1, fmt.Sprintf("%f", tip1Value),
+				tip2, fmt.Sprintf("%f", tip2Value),
+			}))
 		}
+		matchesScrapedCounter++
 	}
 	fmt.Println("Matches scraped: ", matchesScrapedCounter)
+	fmt.Println("Tips scraped: ", len(export))
+
 	return export
 }
 

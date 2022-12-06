@@ -4,17 +4,14 @@ import (
 	"OISA_2x_sistem/soccerbet/odds_parsers"
 	"OISA_2x_sistem/soccerbet/requests_to_server"
 	"OISA_2x_sistem/soccerbet/server_response_parsers"
+	"OISA_2x_sistem/soccerbet/standardization"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"time"
 )
 
 func GetSportsCurrentlyOffered() []string {
-	masterData := requests_to_server.GetMasterData()
-	for masterData == nil {
-		fmt.Println("Stuck on soccerbet request: GetMasterData")
-		masterData = requests_to_server.GetMasterData()
-	}
+	masterData := requests_to_server.GetMasterDataBlocking()
 
 	sportNameByIDMap := server_response_parsers.GetSportNameByIDMap(masterData)
 	sidebar := createSidebar(masterData, sportNameByIDMap)
@@ -26,15 +23,11 @@ func GetSportsCurrentlyOffered() []string {
 	return sidebarKeys
 }
 
-func Scrape(sport string) {
+func Scrape(sport string) []*[8]string {
 	startTime := time.Now()
 	fmt.Println("...scraping soccerbet - ", sport)
 
-	masterData := requests_to_server.GetMasterData()
-	for masterData == nil {
-		fmt.Println("Stuck on soccerbet request: GetMasterData")
-		masterData = requests_to_server.GetMasterData()
-	}
+	masterData := requests_to_server.GetMasterDataBlocking()
 
 	betgameByIdMap := server_response_parsers.GetBetgameByIdMap(masterData)
 	betgameOutcomeByIdMap := server_response_parsers.GetBetgameOutcomeByIdMap(masterData)
@@ -49,10 +42,10 @@ func Scrape(sport string) {
 	}
 	if !utility.IsElInSliceSTR(sport, sidebarKeys) {
 		fmt.Println(sport, "not currently offered at soccerbet")
-		return
+		return nil
 	}
 
-	var odds [][8]string
+	var odds []*[8]string
 
 	switch sport {
 	case "Tenis":
@@ -64,10 +57,9 @@ func Scrape(sport string) {
 	default:
 		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")
 	}
-	
-	for _, el := range odds {
-		fmt.Println(el)
-	}
 
-	fmt.Printf("--- %s seconds ---", time.Since(startTime))
+	standardization.StandardizeData(odds, sport)
+
+	fmt.Printf("--- %s seconds ---\n", time.Since(startTime))
+	return odds
 }

@@ -2,7 +2,7 @@ package odds_parsers
 
 import (
 	"OISA_2x_sistem/utility"
-	"strconv"
+	"fmt"
 	"strings"
 )
 
@@ -28,9 +28,9 @@ func getIDsForSubgameNames(offers interface{}, subgameNames []string) []int {
 	return subgameIDs
 }
 
-func initExportHelp(matchesResponse []interface{}) map[int][4]string {
+func initExportHelp(matchesResponse []interface{}) map[int]*[4]string {
 
-	export := map[int][4]string{}
+	export := map[int]*[4]string{}
 	for _, match := range matchesResponse {
 		match := match.(map[string]interface{})
 		participants := match["participants"].([]interface{})
@@ -40,8 +40,8 @@ func initExportHelp(matchesResponse []interface{}) map[int][4]string {
 		}
 
 		matchID := int(match["id"].(float64))
-		export[matchID] = [4]string{
-			strconv.Itoa(int(match["startTime"].(float64))),
+		export[matchID] = &[4]string{
+			fmt.Sprintf("%.0f", match["startTime"].(float64)),
 			match["competition_name_sr"].(string),
 			strings.Trim(participants[0].(map[string]interface{})["name"].(string), " "),
 			strings.Trim(participants[1].(map[string]interface{})["name"].(string), " "),

@@ -49,7 +49,7 @@ func GetSidebar() []map[string]interface{} {
 	return resultJSON
 }
 
-func GetMatchIds(leagueIDs []int) []map[string]interface{} {
+func GetMatchIDs(leagueIDs []int) []map[string]interface{} {
 
 	url := "https://www.maxbet.rs/ibet/offer/leagues//-1/0.json"
 

@@ -4,6 +4,7 @@ import (
 	"OISA_2x_sistem/merkurxtip/odds_parsers"
 	"OISA_2x_sistem/merkurxtip/requests_to_server"
 	"OISA_2x_sistem/merkurxtip/server_response_parsers"
+	"OISA_2x_sistem/merkurxtip/standardization"
 	"fmt"
 	"time"
 )
@@ -45,7 +46,7 @@ func getMatchIDs(sport string) []int {
 	return matchIDs
 }
 
-func Scrape(sport string) {
+func Scrape(sport string) []*[8]string {
 	startTime := time.Now()
 	fmt.Println("...scraping soccerbet - ", sport)
 
@@ -53,7 +54,7 @@ func Scrape(sport string) {
 	//allSubgames := requests_to_server.GetAllSubgamesBlocking()
 	matchIDs := getMatchIDs(sport)
 
-	var odds [][8]string
+	var odds []*[8]string
 
 	switch sport {
 	case "Tenis":
@@ -66,9 +67,8 @@ func Scrape(sport string) {
 		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")
 	}
 
-	for _, el := range odds {
-		fmt.Println(el)
-	}
+	standardization.StandardizeData(odds, sport)
 
-	fmt.Printf("--- %s seconds ---", time.Since(startTime))
+	fmt.Printf("--- %s seconds ---\n", time.Since(startTime))
+	return odds
 }

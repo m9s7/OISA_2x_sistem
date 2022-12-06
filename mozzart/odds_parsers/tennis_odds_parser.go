@@ -7,10 +7,10 @@ import (
 	"strconv"
 )
 
-func TennisOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [][8]string {
+func TennisOddsParser(sportID int, allSubgamesResponse map[string]interface{}) []*[8]string {
 
 	matchesScrapedCounter := 0
-	var export [][8]string
+	var export []*[8]string
 
 	matchesResponse := requests_to_server.GetMatchIDsBlocking(sportID)
 	exportHelp := initExportHelp(matchesResponse["matches"].([]interface{}))
@@ -53,7 +53,6 @@ func TennisOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [
 					exportMatchHelperKeys = append(exportMatchHelperKeys, k)
 				}
 				if !utility.IsElInSliceSTR(game, exportMatchHelperKeys) {
-					// TODO: Test if this even needs initialization or you can go straight for it
 					exportMatchHelper[game] = &[4]string{}
 				}
 
@@ -92,7 +91,7 @@ func TennisOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [
 		}
 
 		for _, e2 := range exportMatchHelper {
-			e := utility.MergeE1E2(e1, *e2)
+			e := utility.MergeE1E2(e1, e2)
 			export = append(export, e)
 		}
 		matchesScrapedCounter++

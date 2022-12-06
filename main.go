@@ -10,23 +10,32 @@ import (
 
 func main() {
 	fmt.Println(maxbet.GetSportsCurrentlyOffered())
-	maxbet.Scrape("Fudbal")
-	maxbet.Scrape("Košarka")
-	maxbet.Scrape("Tenis")
-
 	fmt.Println(soccerbet.GetSportsCurrentlyOffered())
-	soccerbet.Scrape("Fudbal")
-	soccerbet.Scrape("Košarka")
-	soccerbet.Scrape("Tenis")
-
 	fmt.Println(mozzart.GetSportsCurrentlyOffered())
-	mozzart.Scrape("Tenis")
-	mozzart.Scrape("Košarka")
-	mozzart.Scrape("Fudbal")
-
 	fmt.Println(merkurxtip.GetSportsCurrentlyOffered())
-	merkurxtip.Scrape("Tenis")
-	merkurxtip.Scrape("Košarka")
-	merkurxtip.Scrape("Fudbal")
 
+	sportsToScrape := [...]string{
+		"Košarka",
+		"Tenis",
+		"Fudbal",
+	}
+
+	for _, sport := range sportsToScrape {
+		mozzartData := mozzart.Scrape(sport)
+		maxbetData := maxbet.Scrape(sport)
+		soccerbetData := soccerbet.Scrape(sport)
+		merkurxtipData := merkurxtip.Scrape(sport)
+
+		printData(mozzartData)
+		printData(maxbetData)
+		printData(soccerbetData)
+		printData(merkurxtipData)
+	}
+
+}
+
+func printData(data []*[8]string) {
+	for _, row := range data {
+		fmt.Println(*row)
+	}
 }

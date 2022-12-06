@@ -4,6 +4,7 @@ import (
 	"OISA_2x_sistem/mozzart/odds_parsers"
 	"OISA_2x_sistem/mozzart/requests_to_server"
 	"OISA_2x_sistem/mozzart/server_response_parsers"
+	"OISA_2x_sistem/mozzart/standardization"
 	"fmt"
 	"time"
 )
@@ -19,7 +20,7 @@ func GetSportsCurrentlyOffered() []string {
 	return sports
 }
 
-func Scrape(sport string) [][8]string {
+func Scrape(sport string) []*[8]string {
 	startTime := time.Now()
 
 	response := requests_to_server.GetSidebarSportsAndLeaguesBlocking()
@@ -38,7 +39,7 @@ func Scrape(sport string) [][8]string {
 	}
 
 	fmt.Println("...scraping mozzart - ", sport)
-	var odds [][8]string
+	var odds []*[8]string
 
 	switch sport {
 	case "Tenis":
@@ -51,20 +52,8 @@ func Scrape(sport string) [][8]string {
 		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")
 	}
 
-	for _, el := range odds {
-		fmt.Println(el)
-	}
-	//
-	//standardize_tip_name = get_standardization_func_4_tip_names(sport)
-	//col_name = df.columns[ExportIDX.KICKOFF]
-	//df[col_name] = df[col_name].map(standardize_kickoff_time_string)
-	//col_name = df.columns[ExportIDX.TIP1_NAME]
-	//df[col_name] = df[col_name].map(standardize_tip_name)
-	//col_name = df.columns[ExportIDX.TIP2_NAME]
-	//df[col_name] = df[col_name].map(standardize_tip_name)
-	//
-	//print_to_file(df.to_string(index=False), f"mozz_{str(sport.toStandardName())}.txt")
-	//export_for_merge(df, f"mozz_{str(sport.toStandardName())}.txt")
-	fmt.Printf("--- %s seconds ---", time.Since(startTime))
+	standardization.StandardizeData(odds, sport)
+
+	fmt.Printf("--- %s seconds ---\n", time.Since(startTime))
 	return odds
 }

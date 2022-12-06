@@ -14,9 +14,10 @@ func BasketballOddsParser(
 	betgameByIdMap map[int]map[string]interface{},
 	betgameOutcomeByIdMap map[int]map[string]interface{},
 	betgameGroupByIdMap map[int]map[string]interface{},
-) [][8]string {
+) []*[8]string {
+
 	matchesScrapedCounter := 0
-	var export [][8]string
+	var export []*[8]string
 
 	for _, league := range sidebarLeagues {
 		league := league.(map[string]interface{})
@@ -30,7 +31,7 @@ func BasketballOddsParser(
 		matchInfoList := server_response_parsers.ParseGetLeagueMatchesInfo(response)
 
 		for _, match := range matchInfoList {
-			e1 := [4]string{match["kickoff"].(string), league["Name"].(string), match["home"].(string), match["away"].(string)}
+			e1 := &[4]string{match["kickoff"].(string), league["Name"].(string), match["home"].(string), match["away"].(string)}
 
 			matchID := int(match["match_id"].(float64))
 			matchOdds := requests_to_server.GetMatchOddsValues(matchID)
@@ -52,6 +53,7 @@ func BasketballOddsParser(
 				betgameName := betgame["Name"].(string)
 				betgameGroupName := betgameGroup["Name"].(string)
 				outcomeName := outcome["Name"].(string)
+
 				tipVal := odds["Odds"].(float64)
 
 				if betgameGroupName != "MEČ" || betgameName != "Konačni Ishod" {
@@ -64,7 +66,7 @@ func BasketballOddsParser(
 				}
 
 				if !utility.IsElInSliceSTR(tipComboKey, exportMatchHelperKeys) {
-					exportMatchHelper[tipComboKey] = &[4]string{} //"", "", "", ""
+					exportMatchHelper[tipComboKey] = &[4]string{}
 				}
 
 				// KI_W/OT
@@ -80,8 +82,7 @@ func BasketballOddsParser(
 			}
 
 			for _, e2 := range exportMatchHelper {
-				e := utility.MergeE1E2(e1, *e2)
-				export = append(export, e)
+				export = append(export, utility.MergeE1E2(e1, e2))
 			}
 			matchesScrapedCounter++
 		}

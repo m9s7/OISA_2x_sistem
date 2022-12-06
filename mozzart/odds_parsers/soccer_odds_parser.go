@@ -8,10 +8,10 @@ import (
 	"strings"
 )
 
-func SoccerOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [][8]string {
+func SoccerOddsParser(sportID int, allSubgamesResponse map[string]interface{}) []*[8]string {
 
 	matchesScrapedCounter := 0
-	var export [][8]string
+	var export []*[8]string
 
 	matchesResponse := requests_to_server.GetMatchIDsBlocking(sportID)
 	exportHelp := initExportHelp(matchesResponse["matches"].([]interface{}))
@@ -44,7 +44,7 @@ func SoccerOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [
 				x, _ := strconv.Atoi(string(t1Subgame[2]))
 				t2Subgame := strconv.Itoa(x+1) + "+"
 				if t2Val, ok := tip2[[2]string{t1Game, t2Subgame}]; ok {
-					export = append(export, utility.MergeE1E2(exportHelp[matchID], [4]string{
+					export = append(export, utility.MergeE1E2(exportHelp[matchID], &[4]string{
 						strings.Join(t1Key[:], " "), t1Val,
 						strings.Join([]string{t1Game, t2Subgame}, " "), t2Val,
 					}))
@@ -53,7 +53,7 @@ func SoccerOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [
 			}
 
 			if t2Val, ok := tip2[[2]string{t1Game, "1+"}]; t1Subgame == "0" && ok {
-				export = append(export, utility.MergeE1E2(exportHelp[matchID], [4]string{
+				export = append(export, utility.MergeE1E2(exportHelp[matchID], &[4]string{
 					strings.Join(t1Key[:], " "), t1Val,
 					strings.Join([]string{t1Game, "1+"}, " "), t2Val,
 				}))
@@ -61,15 +61,15 @@ func SoccerOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [
 			}
 
 			if t2Val, ok := tip2[[2]string{"tgg", "ng"}]; t1Subgame == "gg" && ok {
-				export = append(export, utility.MergeE1E2(exportHelp[matchID], [4]string{"gg", t1Val, "ng", t2Val}))
+				export = append(export, utility.MergeE1E2(exportHelp[matchID], &[4]string{"gg", t1Val, "ng", t2Val}))
 				continue
 			}
 			if t2Val, ok := tip2[[2]string{"tgg", "1ng"}]; t1Subgame == "1gg" && ok {
-				export = append(export, utility.MergeE1E2(exportHelp[matchID], [4]string{"1gg", t1Val, "1ng", t2Val}))
+				export = append(export, utility.MergeE1E2(exportHelp[matchID], &[4]string{"1gg", t1Val, "1ng", t2Val}))
 				continue
 			}
 			if t2Val, ok := tip2[[2]string{"tgg", "2ng"}]; t1Subgame == "2gg" && ok {
-				export = append(export, utility.MergeE1E2(exportHelp[matchID], [4]string{"2gg", t1Val, "2ng", t2Val}))
+				export = append(export, utility.MergeE1E2(exportHelp[matchID], &[4]string{"2gg", t1Val, "2ng", t2Val}))
 				continue
 			}
 

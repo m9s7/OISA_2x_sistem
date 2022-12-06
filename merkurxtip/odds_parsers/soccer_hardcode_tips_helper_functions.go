@@ -285,10 +285,6 @@ func getHardcodedTipTypeCodes() (map[string]map[string]string, []map[string]stri
 		},
 	}
 
-	// How to generate first pairName from second:
-	// 1. check if it ends in _PLUS
-	// 2. convert char before that to int. If that fails return error tip was invalid anyway
-
 	leftovers := []map[string]string{
 		{
 			"tip1Name":            "G1P0_3",
