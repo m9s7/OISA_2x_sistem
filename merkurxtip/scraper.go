@@ -19,6 +19,32 @@ func GetSportsCurrentlyOffered() []string {
 	return sports
 }
 
+func getMatchIDs(sport string) []int {
+
+	response := requests_to_server.GetSidebarSportsBlocking()
+	sidebarSportIDByName := server_response_parsers.ParseGetSidebarSports(response)
+	sportID := sidebarSportIDByName[sport]
+
+	response = requests_to_server.GetSidebarSportGroupsBlocking(sportID)
+	groupIDs := server_response_parsers.ParseGetSidebarGroups(response)
+
+	var leagueIDs []string
+	for _, groupID := range groupIDs {
+		response = requests_to_server.GetSidebarSportGroupLeaguesBlocking(sportID, groupID)
+		groupLeagueIDs := server_response_parsers.ParseGetSidebarSportGroupLeagues(response)
+		leagueIDs = append(leagueIDs, groupLeagueIDs...)
+	}
+
+	var matchIDs []int
+	for _, leagueID := range leagueIDs {
+		response = requests_to_server.GetMatchIDsBlocking(sportID, leagueID)
+		leagueMatchIDs := server_response_parsers.ParseGetMatchIDs(response)
+		matchIDs = append(matchIDs, leagueMatchIDs...)
+	}
+
+	return matchIDs
+}
+
 func Scrape(sport string) {
 	startTime := time.Now()
 	fmt.Println("...scraping soccerbet - ", sport)
@@ -45,30 +71,4 @@ func Scrape(sport string) {
 	}
 
 	fmt.Printf("--- %s seconds ---", time.Since(startTime))
-}
-
-func getMatchIDs(sport string) []int {
-
-	response := requests_to_server.GetSidebarSportsBlocking()
-	sidebarSportIDByName := server_response_parsers.ParseGetSidebarSports(response)
-	sportID := sidebarSportIDByName[sport]
-
-	response = requests_to_server.GetSidebarSportGroupsBlocking(sportID)
-	groupIDs := server_response_parsers.ParseGetSidebarGroups(response)
-
-	var leagueIDs []string
-	for _, groupID := range groupIDs {
-		response = requests_to_server.GetSidebarSportGroupLeaguesBlocking(sportID, groupID)
-		groupLeagueIDs := server_response_parsers.ParseGetSidebarSportGroupLeagues(response)
-		leagueIDs = append(leagueIDs, groupLeagueIDs...)
-	}
-
-	var matchIDs []int
-	for _, leagueID := range leagueIDs {
-		response = requests_to_server.GetMatchIDsBlocking(sportID, leagueID)
-		leagueMatchIDs := server_response_parsers.ParseGetMatchIDs(response)
-		matchIDs = append(matchIDs, leagueMatchIDs...)
-	}
-
-	return matchIDs
 }
