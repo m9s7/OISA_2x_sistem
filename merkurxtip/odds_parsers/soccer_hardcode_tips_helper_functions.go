@@ -41,6 +41,9 @@ import (
 // GA_0_X_P2 G2AX_PLUS
 // G2A0 G2A1_PLUS
 
+// GG i NG
+// GGG GNG
+
 type tipFormat struct {
 	length int
 	prefix string
@@ -366,3 +369,49 @@ func getHardcodedTipTypeCodes() (map[string]map[string]string, []map[string]stri
 
 	return pairs, leftovers
 }
+
+//	G0_1 21 - G2_PLUS 242
+//	G0_2 22 - G3_PLUS 24
+//	G0_3 219 - G4_PLUS 25
+//	G0_4 453 - G5_PLUS 27
+//	G0_5 266 - G6_PLUS 223
+//	G1A0 338 - G1A1_PLUS 308
+//	G1H0 337 - G1H1_PLUS 307
+//	G1P0 267 - G1P1_PLUS 207
+//	G1P0_1 211 - G1P2_PLUS 208
+//	G1P0_2 472 - G1P3_PLUS 209
+//	G2P0 269 - G2P1_PLUS 213
+//	G2P0_1 217 - G2P2_PLUS 214
+//	G2P0_2 474 - G2P3_PLUS 215
+//	GA_0_1 249 - GA_2_PLUS 250
+//	GH_0_3 553 - GH_4_PLUS 555
+//	GA_0_3 554 - GA_4_PLUS 556
+//	GGG 272 - GNG 273
+//	GH_0_1 247 - GH_2_PLUS 248
+//
+//	GH_0_1_P1 817 -
+//	GH_0_1_P2 825 -
+//	GH_0_2 551 -
+//	GA_0_1_P1 821 -
+//	GA_0_1_P2 829 -
+//	GA_0_2 552 -
+//	G_NEDAJE_DOMACIN 239 -
+//	G_NEDAJE_GOST 241 -
+//	G2H0 339 -
+//	G2A0 340 -
+//
+//			   - G1P4_PLUS 210
+//				- G2A2_PLUS 298
+//				- G2A3_PLUS 352
+//				- G2A4_PLUS 50241
+//				- G2H2_PLUS 297
+//				- G2H3_PLUS 351
+//				- G2H4_PLUS 50231
+//				- G7_PLUS 28
+//	 			- G2P4_PLUS 216
+//				- G1H2_PLUS 274
+//				- G1H3_PLUS 349
+//				- G1H4_PLUS 50229
+//				- G1A2_PLUS 275
+//				- G1A3_PLUS 350
+//				- G1A4_PLUS 50239
