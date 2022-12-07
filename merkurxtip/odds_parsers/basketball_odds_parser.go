@@ -42,8 +42,8 @@ func BasketballOddsParser(matchIDs []int) []*[8]string {
 			}
 
 			export = append(export, utility.MergeE1E2(e1, &[4]string{
-				m["tip1Name"], fmt.Sprintf("%f", tip1Val.(float64)),
-				m["tip2Name"], fmt.Sprintf("%f", tip2Val.(float64)),
+				m["tip1Name"], fmt.Sprintf("%.2f", tip1Val.(float64)),
+				m["tip2Name"], fmt.Sprintf("%.2f", tip2Val.(float64)),
 			}))
 		}
 

@@ -61,9 +61,9 @@ func SoccerOddsParser(
 						if t2Game == t1Game && t2Subgame == "1+" {
 							e2 := &[4]string{
 								t1Code,
-								fmt.Sprintf("%f", t1Val),
+								fmt.Sprintf("%.2f", t1Val),
 								t2Code,
-								fmt.Sprintf("%f", t2Val),
+								fmt.Sprintf("%.2f", t2Val),
 							}
 							export = append(export, utility.MergeE1E2(e1, e2))
 						}
@@ -80,9 +80,9 @@ func SoccerOddsParser(
 						if t2Game == t1Game && t2Subgame == strconv.Itoa(x+1)+"+" {
 							e2 := &[4]string{
 								t1Code,
-								fmt.Sprintf("%f", t1Val),
+								fmt.Sprintf("%.2f", t1Val),
 								t2Code,
-								fmt.Sprintf("%f", t2Val),
+								fmt.Sprintf("%.2f", t2Val),
 							}
 							export = append(export, utility.MergeE1E2(e1, e2))
 						}
@@ -98,9 +98,9 @@ func SoccerOddsParser(
 						if t2Game == t1Game && t2Subgame == "NG" {
 							e2 := &[4]string{
 								t1Code,
-								fmt.Sprintf("%f", t1Val),
+								fmt.Sprintf("%.2f", t1Val),
 								t2Code,
-								fmt.Sprintf("%f", t2Val),
+								fmt.Sprintf("%.2f", t2Val),
 							}
 							export = append(export, utility.MergeE1E2(e1, e2))
 						}

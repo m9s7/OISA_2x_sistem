@@ -71,10 +71,10 @@ func TennisOddsParser(
 
 					if outcomeName == "1" {
 						exportMatchHelper[tipComboKey][0] = outcome["CodeForPrinting"].(string)
-						exportMatchHelper[tipComboKey][1] = fmt.Sprintf("%f", tipVal)
+						exportMatchHelper[tipComboKey][1] = fmt.Sprintf("%.2f", tipVal)
 					} else if outcomeName == "2" {
 						exportMatchHelper[tipComboKey][2] = outcome["CodeForPrinting"].(string)
-						exportMatchHelper[tipComboKey][3] = fmt.Sprintf("%f", tipVal)
+						exportMatchHelper[tipComboKey][3] = fmt.Sprintf("%.2f", tipVal)
 					} else {
 						log.Fatalln(tipComboKey, outcomeName, outcome["Description"].(string), outcome["CodeForPrinting"].(string), tipVal)
 					}
@@ -89,10 +89,10 @@ func TennisOddsParser(
 
 					if outcomeName == "1" {
 						exportMatchHelper[tipComboKey][0] = outcome["CodeForPrinting"].(string)
-						exportMatchHelper[tipComboKey][1] = fmt.Sprintf("%f", tipVal)
+						exportMatchHelper[tipComboKey][1] = fmt.Sprintf("%.2f", tipVal)
 					} else if outcomeName == "2" {
 						exportMatchHelper[tipComboKey][2] = outcome["CodeForPrinting"].(string)
-						exportMatchHelper[tipComboKey][3] = fmt.Sprintf("%f", tipVal)
+						exportMatchHelper[tipComboKey][3] = fmt.Sprintf("%.2f", tipVal)
 					} else {
 						log.Fatalln(tipComboKey, outcomeName, outcome["Description"].(string), outcome["CodeForPrinting"].(string), tipVal)
 					}
@@ -107,10 +107,10 @@ func TennisOddsParser(
 
 					if outcomeName == "DA" {
 						exportMatchHelper[tipComboKey][0] = outcome["CodeForPrinting"].(string)
-						exportMatchHelper[tipComboKey][1] = fmt.Sprintf("%f", tipVal)
+						exportMatchHelper[tipComboKey][1] = fmt.Sprintf("%.2f", tipVal)
 					} else if outcomeName == "NE" {
 						exportMatchHelper[tipComboKey][2] = outcome["CodeForPrinting"].(string)
-						exportMatchHelper[tipComboKey][3] = fmt.Sprintf("%f", tipVal)
+						exportMatchHelper[tipComboKey][3] = fmt.Sprintf("%.2f", tipVal)
 					} else {
 						log.Fatalln(tipComboKey, outcomeName, outcome["Description"].(string), outcome["CodeForPrinting"].(string), tipVal)
 					}

@@ -40,9 +40,9 @@ func Get2outcomeOdds(matchIDs []int, subgameNames []string) []*[8]string {
 			}
 			export = append(export, utility.MergeE1E2(e1, &[4]string{
 				TT1["tipType"].(string),
-				fmt.Sprintf("%f", TT1["value"].(float64)),
+				fmt.Sprintf("%.2f", TT1["value"].(float64)),
 				TT2["tipType"].(string),
-				fmt.Sprintf("%f", TT2["value"].(float64)),
+				fmt.Sprintf("%.2f", TT2["value"].(float64)),
 			}))
 		}
 		matchesScrapedCounter++

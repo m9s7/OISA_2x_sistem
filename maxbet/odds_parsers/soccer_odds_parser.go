@@ -94,8 +94,8 @@ func GetSoccerOdds(matchIDs []int) []*[8]string {
 						continue
 					}
 					export = append(export, utility.MergeE1E2(e1, &[4]string{
-						tipCombo[0], fmt.Sprintf("%f", tipsVals[tipCombo[0]]),
-						tipCombo[1], fmt.Sprintf("%f", tipsVals[tipCombo[1]]),
+						tipCombo[0], fmt.Sprintf("%.2f", tipsVals[tipCombo[0]]),
+						tipCombo[1], fmt.Sprintf("%.2f", tipsVals[tipCombo[1]]),
 					}))
 				}
 				continue
@@ -137,8 +137,8 @@ func GetSoccerOdds(matchIDs []int) []*[8]string {
 				}
 
 				export = append(export, utility.MergeE1E2(e1, &[4]string{
-					tip1, fmt.Sprintf("%f", tip1Value),
-					tip2, fmt.Sprintf("%f", tip2Value),
+					tip1, fmt.Sprintf("%.2f", tip1Value),
+					tip2, fmt.Sprintf("%.2f", tip2Value),
 				}))
 			}
 
@@ -166,8 +166,8 @@ func GetSoccerOdds(matchIDs []int) []*[8]string {
 			}
 
 			export = append(export, utility.MergeE1E2(e1, &[4]string{
-				tip1, fmt.Sprintf("%f", tip1Value),
-				tip2, fmt.Sprintf("%f", tip2Value),
+				tip1, fmt.Sprintf("%.2f", tip1Value),
+				tip2, fmt.Sprintf("%.2f", tip2Value),
 			}))
 		}
 		matchesScrapedCounter++

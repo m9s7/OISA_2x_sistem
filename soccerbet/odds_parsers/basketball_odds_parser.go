@@ -72,10 +72,10 @@ func BasketballOddsParser(
 				// KI_W/OT
 				if outcome["Description"].(string) == "Domaćin pobeđuje na meču" && outcomeName == "1" {
 					exportMatchHelper[tipComboKey][0] = outcome["CodeForPrinting"].(string) // maybe deref EMH[TCK] here
-					exportMatchHelper[tipComboKey][1] = fmt.Sprintf("%f", tipVal)
+					exportMatchHelper[tipComboKey][1] = fmt.Sprintf("%.2f", tipVal)
 				} else if outcome["Description"].(string) == "Gost pobeđuje na meču" && outcomeName == "2" {
 					exportMatchHelper[tipComboKey][2] = outcome["CodeForPrinting"].(string)
-					exportMatchHelper[tipComboKey][3] = fmt.Sprintf("%f", tipVal)
+					exportMatchHelper[tipComboKey][3] = fmt.Sprintf("%.2f", tipVal)
 				} else {
 					log.Fatalln(tipComboKey, outcomeName, outcome["Description"].(string), outcome["CodeForPrinting"].(string), tipVal)
 				}
