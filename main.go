@@ -17,12 +17,17 @@ func main() {
 	fmt.Println("merkurxtip:", merkurxtip.GetSportsCurrentlyOffered())
 
 	sportsToScrape := [...]string{
-		//"Košarka",
-		//"Tenis",
+		"Košarka",
+		"Tenis",
 		"Fudbal",
 	}
 
-	bookies := []string{"mozzart", "maxbet", "soccerbet", "merkurxtip"}
+	bookies := []string{
+		"mozzart",
+		"maxbet",
+		"soccerbet",
+		"merkurxtip",
+	}
 
 	for _, sport := range sportsToScrape {
 		scrapedData := map[string][]*[8]string{}
@@ -30,12 +35,24 @@ func main() {
 		for _, bookie := range bookies {
 			scraper := getScraper(bookie)
 			scrapedData[bookie] = scraper(sport)
+
+			//// Print scraped data
+			//var kk [][]string
+			//for _, rec := range scrapedData[bookie] {
+			//	kk = append(kk, rec[:])
+			//}
+			//fmt.Println(dataframe.LoadRecords(kk).String())
 		}
 
 		mergedData := merge.Merge(sport, scrapedData)
-		for _, row := range mergedData {
-			fmt.Println(row)
+		if mergedData == nil || len(mergedData) == 1 {
+			continue
 		}
+
+		//// Print merged data
+		//fmt.Println(dataframe.LoadRecords(mergedData).Drop([]int{2, 3, 4}).String())
+
+		FindArb(mergedData)
 	}
 
 }

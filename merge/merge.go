@@ -20,7 +20,7 @@ func Merge(sportName string, data map[string][]*[8]string) [][]string {
 	if len(bookies) < 2 {
 		fmt.Println("... nothing to merge -" + sportName)
 		fmt.Println("Books passed in:", bookies)
-		//return nil
+		return nil
 	}
 
 	startTime := time.Now()

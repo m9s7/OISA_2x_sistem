@@ -3,7 +3,6 @@ package standardization
 import "strings"
 
 func standardizeTipNameBasketball(tip string) string {
-	//:TODO this is ok, just change in merge function that only one tip needs to match not both
 	if len(tip) == 0 {
 		return ""
 	}

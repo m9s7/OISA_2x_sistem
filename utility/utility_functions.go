@@ -1,5 +1,10 @@
 package utility
 
+import (
+	"math"
+	"strings"
+)
+
 func IndexOf(s string, list []string) int {
 	index := -1
 	for i, el := range list {
@@ -56,4 +61,17 @@ func Abs(x int64) int64 {
 		return -x
 	}
 	return x
+}
+
+func TrimWhiteSpace(str string) string {
+	return strings.Trim(str, " ")
+}
+
+func round(num float64) int {
+	return int(num + math.Copysign(0.5, num))
+}
+
+func ToFixed(num float64, precision int) float64 {
+	output := math.Pow(10, float64(precision))
+	return float64(round(num*output)) / output
 }

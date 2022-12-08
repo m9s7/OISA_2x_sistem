@@ -4,12 +4,16 @@ import (
 	"OISA_2x_sistem/utility"
 )
 
-func StandardizeData(data []*[8]string, sport string) {
+func StandardizeData(records []*[8]string, sport string) {
 	standardizeTipName := getStandardizationFunc4TipNames(sport)
-	for _, row := range data {
-		row[utility.Kickoff] = standardizeKickoffTime(row[utility.Kickoff])
-		row[utility.Tip1Name] = standardizeTipName(row[utility.Tip1Name])
-		row[utility.Tip2Name] = standardizeTipName(row[utility.Tip2Name])
+	for _, record := range records {
+		for i := range record {
+			record[i] = utility.TrimWhiteSpace(record[i])
+		}
+		record[utility.Kickoff] = standardizeKickoffTime(record[utility.Kickoff])
+		record[utility.Tip1Name] = standardizeTipName(record[utility.Tip1Name])
+		record[utility.Tip2Name] = standardizeTipName(record[utility.Tip2Name])
+
 	}
 }
 
