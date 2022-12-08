@@ -48,7 +48,7 @@ func getMatchIDs(sport string) []int {
 
 func Scrape(sport string) []*[8]string {
 	startTime := time.Now()
-	fmt.Println("...scraping soccerbet - ", sport)
+	fmt.Println("...scraping merkurxtip - ", sport)
 
 	// Don't need it all subgames are hardcoded
 	//allSubgames := requests_to_server.GetAllSubgamesBlocking()

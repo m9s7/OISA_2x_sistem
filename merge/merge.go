@@ -60,7 +60,7 @@ func Merge(sportName string, data map[string][]*[8]string) [][]string {
 					continue
 				}
 
-				if sportName == "soccer" {
+				if sportName == "Fudbal" {
 					if fuzzy.Ratio(el1[utility.Team1], el2[utility.Team1]) < 80 {
 						continue
 					}

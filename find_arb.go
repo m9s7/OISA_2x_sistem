@@ -102,7 +102,7 @@ func FindArb(records [][]string) []Arb {
 			tip1Value:        tip1Max,
 			stakePercentage1: IAP1 / outlay,
 
-			tip2:             record[x["tip1"]],
+			tip2:             record[x["tip2"]],
 			bookie2:          strings.Split(records[0][x["tip2"]+relativeTip2Idx], "_")[1],
 			tip2Value:        tip2Max,
 			stakePercentage2: IAP2 / outlay,
