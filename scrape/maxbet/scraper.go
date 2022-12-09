@@ -1,10 +1,10 @@
 package maxbet
 
 import (
-	"OISA_2x_sistem/maxbet/odds_parsers"
-	"OISA_2x_sistem/maxbet/requests_to_server"
-	"OISA_2x_sistem/maxbet/server_response_parsers"
-	"OISA_2x_sistem/maxbet/standardization"
+	odds_parsers2 "OISA_2x_sistem/scrape/maxbet/odds_parsers"
+	"OISA_2x_sistem/scrape/maxbet/requests_to_server"
+	"OISA_2x_sistem/scrape/maxbet/server_response_parsers"
+	"OISA_2x_sistem/scrape/maxbet/standardization"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"time"
@@ -40,11 +40,11 @@ func Scrape(sport string) []*[8]string {
 
 	switch sport {
 	case utility.Tennis:
-		odds = odds_parsers.Get2outcomeOdds(matchIDs, []string{"Konačan ishod", "Prvi set", "Drugi set", "Tie Break", "Tie Break prvi set", "Tie Break drugi set"})
+		odds = odds_parsers2.Get2outcomeOdds(matchIDs, []string{"Konačan ishod", "Prvi set", "Drugi set", "Tie Break", "Tie Break prvi set", "Tie Break drugi set"})
 	case utility.Basketball:
-		odds = odds_parsers.Get2outcomeOdds(matchIDs, []string{"Konačan ishod sa produžecima"})
+		odds = odds_parsers2.Get2outcomeOdds(matchIDs, []string{"Konačan ishod sa produžecima"})
 	case utility.Soccer:
-		odds = odds_parsers.GetSoccerOdds(matchIDs)
+		odds = odds_parsers2.GetSoccerOdds(matchIDs)
 	default:
 		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")
 	}

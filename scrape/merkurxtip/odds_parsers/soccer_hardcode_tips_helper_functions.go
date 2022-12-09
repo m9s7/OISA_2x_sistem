@@ -1,7 +1,7 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/merkurxtip/requests_to_server"
+	"OISA_2x_sistem/scrape/merkurxtip/requests_to_server"
 	"strings"
 )
 

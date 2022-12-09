@@ -1,8 +1,8 @@
 package soccerbet
 
 import (
-	"OISA_2x_sistem/soccerbet/requests_to_server"
-	"OISA_2x_sistem/soccerbet/server_response_parsers"
+	"OISA_2x_sistem/scrape/soccerbet/requests_to_server"
+	"OISA_2x_sistem/scrape/soccerbet/server_response_parsers"
 	"OISA_2x_sistem/utility"
 )
 

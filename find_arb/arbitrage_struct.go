@@ -1,4 +1,4 @@
-package arbitrage
+package find_arb
 
 import (
 	"fmt"
@@ -21,7 +21,8 @@ type Arb struct {
 	Tip2Value        float64
 	StakePercentage2 float64
 
-	ROI float64
+	PlayFirst string
+	ROI       float64
 }
 
 func ArbToString(a Arb, sport string) string {
@@ -38,6 +39,7 @@ func ArbToString(a Arb, sport string) string {
 		"kvota: " + fmt.Sprintf("%.2f", a.Tip2Value) + " @ " + strings.ToUpper(a.Bookie2),
 		"ulog = ukupno * " + fmt.Sprintf("%.3f", a.StakePercentage2),
 		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
+		"Play first @ " + a.PlayFirst,
 		"ROI: " + fmt.Sprintf("%.2f", a.ROI) + "%",
 		"```",
 	}, "\n")

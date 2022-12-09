@@ -4,6 +4,7 @@ import (
 	"OISA_2x_sistem/utility"
 	"encoding/csv"
 	"fmt"
+	"github.com/go-gota/gota/dataframe"
 	fuzzy "github.com/paul-mannino/go-fuzzywuzzy"
 	"log"
 	"os"
@@ -131,4 +132,12 @@ func writeRecordsToCSV(mergedRecords [][]string, sport string) {
 		}
 	}
 	w.Flush()
+}
+
+func IsEmpty(data [][]string) bool {
+	return data == nil || len(data) == 1
+}
+
+func PrintMergedData(data [][]string) {
+	fmt.Println(dataframe.LoadRecords(data).Drop([]int{2, 3, 4}).String())
 }

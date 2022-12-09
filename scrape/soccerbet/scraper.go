@@ -1,10 +1,10 @@
 package soccerbet
 
 import (
-	"OISA_2x_sistem/soccerbet/odds_parsers"
-	"OISA_2x_sistem/soccerbet/requests_to_server"
-	"OISA_2x_sistem/soccerbet/server_response_parsers"
-	"OISA_2x_sistem/soccerbet/standardization"
+	odds_parsers2 "OISA_2x_sistem/scrape/soccerbet/odds_parsers"
+	"OISA_2x_sistem/scrape/soccerbet/requests_to_server"
+	"OISA_2x_sistem/scrape/soccerbet/server_response_parsers"
+	"OISA_2x_sistem/scrape/soccerbet/standardization"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"time"
@@ -49,11 +49,11 @@ func Scrape(sport string) []*[8]string {
 
 	switch sport {
 	case utility.Tennis:
-		odds = odds_parsers.TennisOddsParser(sidebar[sport], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
+		odds = odds_parsers2.TennisOddsParser(sidebar[sport], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
 	case utility.Basketball:
-		odds = odds_parsers.BasketballOddsParser(sidebar[sport], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
+		odds = odds_parsers2.BasketballOddsParser(sidebar[sport], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
 	case utility.Soccer:
-		odds = odds_parsers.SoccerOddsParser(sidebar[sport], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
+		odds = odds_parsers2.SoccerOddsParser(sidebar[sport], betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
 	default:
 		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")
 	}

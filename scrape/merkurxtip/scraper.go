@@ -1,10 +1,10 @@
 package merkurxtip
 
 import (
-	"OISA_2x_sistem/merkurxtip/odds_parsers"
-	"OISA_2x_sistem/merkurxtip/requests_to_server"
-	"OISA_2x_sistem/merkurxtip/server_response_parsers"
-	"OISA_2x_sistem/merkurxtip/standardization"
+	odds_parsers2 "OISA_2x_sistem/scrape/merkurxtip/odds_parsers"
+	"OISA_2x_sistem/scrape/merkurxtip/requests_to_server"
+	"OISA_2x_sistem/scrape/merkurxtip/server_response_parsers"
+	"OISA_2x_sistem/scrape/merkurxtip/standardization"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"time"
@@ -59,11 +59,11 @@ func Scrape(sport string) []*[8]string {
 
 	switch sport {
 	case utility.Tennis:
-		odds = odds_parsers.TennisOddsParser(matchIDs)
+		odds = odds_parsers2.TennisOddsParser(matchIDs)
 	case utility.Basketball:
-		odds = odds_parsers.BasketballOddsParser(matchIDs)
+		odds = odds_parsers2.BasketballOddsParser(matchIDs)
 	case utility.Soccer:
-		odds = odds_parsers.SoccerOddsParser(matchIDs)
+		odds = odds_parsers2.SoccerOddsParser(matchIDs)
 	default:
 		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")
 	}

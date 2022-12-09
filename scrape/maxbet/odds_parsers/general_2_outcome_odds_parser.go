@@ -1,7 +1,7 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/maxbet/requests_to_server"
+	"OISA_2x_sistem/scrape/maxbet/requests_to_server"
 	"OISA_2x_sistem/utility"
 	"fmt"
 )

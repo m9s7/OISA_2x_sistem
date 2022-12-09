@@ -1,13 +1,13 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/mozzart/requests_to_server"
+	"OISA_2x_sistem/scrape/mozzart/requests_to_server"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"strconv"
 )
 
-func BasketballOddsParser(sportID int, allSubgamesResponse map[string]interface{}) []*[8]string {
+func TennisOddsParser(sportID int, allSubgamesResponse map[string]interface{}) []*[8]string {
 
 	matchesScrapedCounter := 0
 	var export []*[8]string
@@ -20,7 +20,7 @@ func BasketballOddsParser(sportID int, allSubgamesResponse map[string]interface{
 		exportHelpKeys = append(exportHelpKeys, k)
 	}
 
-	focusedSubgames := []string{"pobm"}
+	focusedSubgames := []string{"ki", "1s", "ug1s", "ug2s", "tb"}
 	subgameIDs := getIDsForSubgameNames(allSubgamesResponse[strconv.Itoa(sportID)], focusedSubgames)
 	odds := requests_to_server.GetOddsBlocking(exportHelpKeys, subgameIDs)
 
@@ -47,7 +47,7 @@ func BasketballOddsParser(sportID int, allSubgamesResponse map[string]interface{
 			subgame := sg["subGame"].(map[string]interface{})["subGameName"].(string)
 			val := sg["value"].(string)
 
-			if game == "pobm" {
+			if game == "ki" || game == "1s" {
 				var exportMatchHelperKeys []string
 				for k := range exportMatchHelper {
 					exportMatchHelperKeys = append(exportMatchHelperKeys, k)
@@ -68,6 +68,26 @@ func BasketballOddsParser(sportID int, allSubgamesResponse map[string]interface{
 				}
 			}
 
+			if game == "ug1s" || game == "ug2s" || game == "tb" {
+				var exportMatchHelperKeys []string
+				for k := range exportMatchHelper {
+					exportMatchHelperKeys = append(exportMatchHelperKeys, k)
+				}
+				if !utility.IsElInSliceSTR(game, exportMatchHelperKeys) {
+					exportMatchHelper[game] = &[4]string{}
+				}
+
+				if subgame == "da 13" || subgame == "da" {
+					exportMatchHelper[game][0] = game + " " + subgame
+					exportMatchHelper[game][1] = val
+				} else if subgame == "ne 13" || subgame == "ne" {
+					exportMatchHelper[game][2] = game + " " + subgame
+					exportMatchHelper[game][3] = val
+				} else {
+					fmt.Println("Mozzart: Two-outcome game with third outcome" + game + subgame + "found, value=" + val)
+					continue
+				}
+			}
 		}
 
 		for _, e2 := range exportMatchHelper {
