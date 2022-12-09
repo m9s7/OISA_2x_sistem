@@ -39,7 +39,7 @@ func addElToRecord(el *[8]string, bookieOrder int, record *[]string, indxMap map
 func shouldSwitchTipVals(tipName string, sportName string) bool {
 
 	var tipNamesNotToSwitch [4]string
-	if sportName == "tennis" {
+	if sportName == utility.Tennis {
 		tipNamesNotToSwitch = [4]string{"TIE_BREAK_YES", "TIE_BREAK_NO", "TIE_BREAK_FST_SET_YES", "TIE_BREAK_FST_SET_NO"}
 	} else {
 		return false

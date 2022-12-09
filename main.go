@@ -8,6 +8,7 @@ import (
 	"OISA_2x_sistem/mozzart"
 	"OISA_2x_sistem/soccerbet"
 	"OISA_2x_sistem/telegram"
+	"OISA_2x_sistem/utility"
 	"fmt"
 )
 
@@ -20,9 +21,9 @@ func main() {
 	fmt.Println("merkurxtip:", merkurxtip.GetSportsCurrentlyOffered())
 
 	sportsToScrape := [...]string{
-		"Košarka",
-		"Tenis",
-		"Fudbal",
+		utility.Tennis,
+		utility.Basketball,
+		utility.Soccer,
 	}
 
 	bookies := []string{
@@ -32,6 +33,11 @@ func main() {
 		"merkurxtip",
 	}
 
+	oldArbs := map[string][]arbitrage.Arb{
+		utility.Tennis:     nil,
+		utility.Basketball: nil,
+		utility.Soccer:     nil,
+	}
 	for {
 		for _, sport := range sportsToScrape {
 
@@ -56,15 +62,22 @@ func main() {
 			//fmt.Println(dataframe.LoadRecords(mergedData).Drop([]int{2, 3, 4}).String())
 
 			arbs := arbitrage.FindArb(mergedData)
-			if len(arbs) != 0 {
-				telegram.BroadcastToDev("FRISKE ARBE")
-				for _, a := range arbs {
-					telegram.BroadcastToDev(arbitrage.ArbToString(a, sport))
-				}
-			} else {
+			if len(arbs) == 0 {
 				telegram.BroadcastToDev(`Nema arbe :\\( \\- ` + sport)
+				oldArbs[sport] = nil
+				continue
 			}
-
+		Loop:
+			for _, arb := range arbs {
+				for _, oldArb := range oldArbs[sport] {
+					if arb.Equals(oldArb) {
+						continue Loop
+					}
+				}
+				telegram.BroadcastToDev("FRISKE ARBE")
+				telegram.BroadcastToDev(arbitrage.ArbToString(arb, sport))
+			}
+			oldArbs[sport] = arbs
 			//telegram.BroadcastToDev(arbitrage.ArbToString(arbitrage.GetExampleArbitrage(), "EXAMPLE SPORT"))
 		}
 	}

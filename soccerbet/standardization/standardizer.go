@@ -30,11 +30,11 @@ func standardizeKickoffTime(kickoff string) string {
 
 func getStandardizationFunc4TipNames(sport string) func(tip string) string {
 	switch sport {
-	case "Košarka":
+	case utility.Basketball:
 		return standardizeTipNameBasketball
-	case "Tenis":
+	case utility.Tennis:
 		return standardizeTipNameTennis
-	case "Fudbal":
+	case utility.Soccer:
 		return standardizeTipNameSoccer
 	default:
 		panic("No tip name standardization function for sport: " + sport)

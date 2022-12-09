@@ -5,6 +5,7 @@ import (
 	"OISA_2x_sistem/mozzart/requests_to_server"
 	"OISA_2x_sistem/mozzart/server_response_parsers"
 	"OISA_2x_sistem/mozzart/standardization"
+	"OISA_2x_sistem/utility"
 	"fmt"
 	"time"
 )
@@ -42,11 +43,11 @@ func Scrape(sport string) []*[8]string {
 	var odds []*[8]string
 
 	switch sport {
-	case "Tenis":
+	case utility.Tennis:
 		odds = odds_parsers.TennisOddsParser(getIDByNameMap[sport], allSubgamesResponse)
-	case "Košarka":
+	case utility.Basketball:
 		odds = odds_parsers.BasketballOddsParser(getIDByNameMap[sport], allSubgamesResponse)
-	case "Fudbal":
+	case utility.Soccer:
 		odds = odds_parsers.SoccerOddsParser(getIDByNameMap[sport], allSubgamesResponse)
 	default:
 		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")

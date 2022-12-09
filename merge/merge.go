@@ -2,8 +2,11 @@ package merge
 
 import (
 	"OISA_2x_sistem/utility"
+	"encoding/csv"
 	"fmt"
 	fuzzy "github.com/paul-mannino/go-fuzzywuzzy"
+	"log"
+	"os"
 	"strconv"
 	"time"
 )
@@ -60,7 +63,7 @@ func Merge(sportName string, data map[string][]*[8]string) [][]string {
 					continue
 				}
 
-				if sportName == "Fudbal" {
+				if sportName == utility.Soccer {
 					if fuzzy.Ratio(el1[utility.Team1], el2[utility.Team1]) < 80 {
 						continue
 					}
@@ -94,17 +97,38 @@ func Merge(sportName string, data map[string][]*[8]string) [][]string {
 
 			}
 		}
-
 		if doAddRecordToMerged {
 			mergedRecords = append(mergedRecords, recordToMerge)
 		}
 	}
+	writeRecordsToCSV(mergedRecords, sportName)
 
 	for _, bookie := range bookies {
 		fmt.Println(bookie.name, ": ", len(bookie.rows))
 	}
 	fmt.Println("Successfully merged:", successfulMatches, "records")
-
 	fmt.Println("--- ", time.Now().Sub(startTime), " ---")
+
 	return mergedRecords
+}
+
+func writeRecordsToCSV(mergedRecords [][]string, sport string) {
+	f, err := os.Create("C:\\Users\\Matija\\GolandProjects\\OISA_2x_sistem\\IO\\merged_records\\" + sport + ".csv")
+	if err != nil {
+		log.Println("Failed to open mergedRecords CSV file", err)
+	}
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			log.Println("Failed to close mergedRecords CSV file", err)
+		}
+	}(f)
+
+	w := csv.NewWriter(f)
+	for _, record := range mergedRecords {
+		if err := w.Write(record); err != nil {
+			log.Println("Failed to write record to mergedRecords CSV file", err)
+		}
+	}
+	w.Flush()
 }

@@ -63,3 +63,19 @@ func GetExampleArbitrage() Arb {
 		ROI: 0.23,
 	}
 }
+
+func (a Arb) Equals(b Arb) bool {
+	epsilon := 0.001
+	return a.Kickoff == b.Kickoff &&
+		a.League == b.League &&
+		a.Team1 == b.Team1 &&
+		a.Team2 == b.Team2 &&
+		a.Tip1 == b.Tip1 &&
+		a.Bookie1 == b.Bookie1 &&
+		a.Tip1Value-b.Tip1Value < epsilon &&
+		a.StakePercentage1 == b.StakePercentage1 &&
+		a.Tip2 == b.Tip2 &&
+		a.Bookie2 == b.Bookie2 &&
+		a.Tip2Value-b.Tip2Value < epsilon &&
+		a.ROI-b.ROI < epsilon
+}

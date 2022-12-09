@@ -13,3 +13,9 @@ const (
 )
 
 var ScrapeColsNames = [8]string{"kick_off", "league", "1", "2", "tip1_name", "tip1_val", "tip2_name", "tip2_val"}
+
+const (
+	Soccer     string = "Fudbal"
+	Basketball string = "Košarka"
+	Tennis     string = "Tenis"
+)
