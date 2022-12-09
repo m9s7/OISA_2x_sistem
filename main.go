@@ -10,15 +10,11 @@ import (
 	"OISA_2x_sistem/telegram"
 	"OISA_2x_sistem/utility"
 	"fmt"
+	"github.com/go-gota/gota/dataframe"
 )
 
 func main() {
-
-	fmt.Println("Available sports: ")
-	fmt.Println("maxbet:", maxbet.GetSportsCurrentlyOffered())
-	fmt.Println("soccerbet:", soccerbet.GetSportsCurrentlyOffered())
-	fmt.Println("mozzart:", mozzart.GetSportsCurrentlyOffered())
-	fmt.Println("merkurxtip:", merkurxtip.GetSportsCurrentlyOffered())
+	//printAllAvailableSports()
 
 	sportsToScrape := [...]string{
 		utility.Tennis,
@@ -46,38 +42,17 @@ func main() {
 				scraper := getScraper(bookie)
 				scrapedData[bookie] = scraper(sport)
 
-				//// Print scraped data
-				//var kk [][]string
-				//for _, rec := range scrapedData[bookie] {
-				//	kk = append(kk, rec[:])
-				//}
-				//fmt.Println(dataframe.LoadRecords(kk).String())
+				printScrapedData(scrapedData)
 			}
 
 			mergedData := merge.Merge(sport, scrapedData)
 			if mergedData == nil || len(mergedData) == 1 {
 				continue
 			}
-			//// Print merged data
-			//fmt.Println(dataframe.LoadRecords(mergedData).Drop([]int{2, 3, 4}).String())
+			printMergedData(mergedData)
 
 			arbs := arbitrage.FindArb(mergedData)
-			if len(arbs) == 0 {
-				telegram.BroadcastToDev(`Nema arbe :\\( \\- ` + sport)
-				oldArbs[sport] = nil
-				continue
-			}
-		Loop:
-			for _, arb := range arbs {
-				for _, oldArb := range oldArbs[sport] {
-					if arb.Equals(oldArb) {
-						continue Loop
-					}
-				}
-				telegram.BroadcastToDev("FRISKE ARBE")
-				telegram.BroadcastToDev(arbitrage.ArbToString(arb, sport))
-			}
-			oldArbs[sport] = arbs
+			broadcastNewArbs(arbs, oldArbs, sport)
 			//telegram.BroadcastToDev(arbitrage.ArbToString(arbitrage.GetExampleArbitrage(), "EXAMPLE SPORT"))
 		}
 	}
@@ -97,4 +72,52 @@ func getScraper(bookie string) func(sport string) []*[8]string {
 	default:
 		panic("Bookie not supported")
 	}
+}
+
+func printScrapedData(scrapedData map[string][]*[8]string) {
+	for bookie, data := range scrapedData {
+		fmt.Println(bookie)
+		var kk [][]string
+		for _, rec := range data {
+			kk = append(kk, rec[:])
+		}
+		fmt.Println(dataframe.LoadRecords(kk).String())
+	}
+}
+
+func printMergedData(mergedData [][]string) {
+	fmt.Println(dataframe.LoadRecords(mergedData).Drop([]int{2, 3, 4}).String())
+}
+
+func broadcastNewArbs(arbs []arbitrage.Arb, oldArbs map[string][]arbitrage.Arb, sport string) {
+	if len(arbs) == 0 {
+		//telegram.BroadcastToDev(`Nema arbe :\\( \\- ` + sport)
+		oldArbs[sport] = nil
+		return
+	}
+	for _, arb := range arbs {
+		if isArbInOldArbs(arb, oldArbs[sport]) {
+			continue
+		}
+		telegram.BroadcastToDev("FRISKE ARBE")
+		telegram.BroadcastToDev(arbitrage.ArbToString(arb, sport))
+	}
+	oldArbs[sport] = arbs
+}
+
+func isArbInOldArbs(arb arbitrage.Arb, oldArbs []arbitrage.Arb) bool {
+	for _, oldArb := range oldArbs {
+		if arb.Equals(oldArb) {
+			return true
+		}
+	}
+	return false
+}
+
+func printAllAvailableSports() {
+	fmt.Println("Available sports: ")
+	fmt.Println("maxbet:", maxbet.GetSportsCurrentlyOffered())
+	fmt.Println("soccerbet:", soccerbet.GetSportsCurrentlyOffered())
+	fmt.Println("mozzart:", mozzart.GetSportsCurrentlyOffered())
+	fmt.Println("merkurxtip:", merkurxtip.GetSportsCurrentlyOffered())
 }
