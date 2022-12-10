@@ -38,9 +38,9 @@ func main() {
 				continue
 			}
 
-			scrapedSportAtBookie := scrape.ScrapeDataFromEachBookie(sportsAtBookie, sport)
+			scrapedData := scrape.ScrapeDataFromEachBookie(sportsAtBookie, sport)
 
-			mergedData := merge.Merge(sport, scrapedSportAtBookie)
+			mergedData := merge.Merge(sport, scrapedData)
 			if merge.IsEmpty(mergedData) {
 				continue
 			}

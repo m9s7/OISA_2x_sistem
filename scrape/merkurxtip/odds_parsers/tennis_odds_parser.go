@@ -4,6 +4,7 @@ import (
 	"OISA_2x_sistem/scrape/merkurxtip/requests_to_server"
 	"OISA_2x_sistem/utility"
 	"fmt"
+	"strconv"
 )
 
 func TennisOddsParser(matchIDs []int) []*[8]string {
@@ -39,6 +40,10 @@ func TennisOddsParser(matchIDs []int) []*[8]string {
 
 	for _, matchID := range matchIDs {
 		match := requests_to_server.GetMatchOdds(matchID)
+		if match == nil {
+			fmt.Println("Merkurxtip: GetMatchOdds(matchID:" + strconv.Itoa(matchID) + ") is None, skipping it..")
+			continue
+		}
 
 		e1 := &[4]string{
 			fmt.Sprintf("%.0f", match["kickOffTime"].(float64)),
