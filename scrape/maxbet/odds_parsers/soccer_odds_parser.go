@@ -172,6 +172,8 @@ func GetSoccerOdds(matchIDs []int) []*[8]string {
 		}
 		matchesScrapedCounter++
 	}
+
+	fmt.Println("@MAXBET" + strings.Repeat("-", 26-len("@MAXBET")))
 	fmt.Println("Matches scraped: ", matchesScrapedCounter)
 	fmt.Println("Tips scraped: ", len(export))
 

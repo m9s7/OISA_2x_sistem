@@ -2,24 +2,27 @@ package find_arb
 
 import (
 	"OISA_2x_sistem/telegram"
+	"OISA_2x_sistem/utility"
 	"fmt"
 	"strings"
 )
 
 func ArbToString(a Arb, sport string) string {
+	separatorLen := utility.Min(len(a.Team1)+len(a.Team2)+4, 33)
+	separator := strings.Repeat("=", separatorLen)
 	return strings.Join([]string{
 		"```",
 		strings.ToUpper(sport) + ", " + strings.ToUpper(a.League),
 		a.Team1 + " vs " + a.Team2,
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
+		separator,
 		strings.ToUpper(a.Tip1),
 		"kvota: " + fmt.Sprintf("%.2f", a.Tip1Value) + " @ " + strings.ToUpper(a.Bookie1),
 		"ulog = ukupno * " + fmt.Sprintf("%.3f", a.StakePercentage1),
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
+		separator,
 		strings.ToUpper(a.Tip2),
 		"kvota: " + fmt.Sprintf("%.2f", a.Tip2Value) + " @ " + strings.ToUpper(a.Bookie2),
 		"ulog = ukupno * " + fmt.Sprintf("%.3f", a.StakePercentage2),
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
+		separator,
 		"Play first @ " + a.PlayFirst,
 		"ROI: " + fmt.Sprintf("%.2f", a.ROI) + "%",
 		"```",
@@ -27,38 +30,42 @@ func ArbToString(a Arb, sport string) string {
 }
 
 func FreeArbToString(a Arb, sport string) string {
+	separatorLen := utility.Min(len(a.Team1)+len(a.Team2)+4, 33)
+	separator := strings.Repeat("=", separatorLen)
 	return strings.Join([]string{
 		"```",
 		strings.ToUpper(sport) + ", " + strings.ToUpper(a.League),
 		a.Team1 + " vs " + a.Team2,
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
+		separator,
 		strings.ToUpper(a.Tip1),
 		"kvota: " + fmt.Sprintf("%.2f", a.Tip1Value) + " @ " + strings.ToUpper(a.Bookie1),
 		"ulog = ukupno * " + fmt.Sprintf("%.3f", a.StakePercentage1),
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
+		separator,
 		strings.ToUpper(a.Tip2),
 		"kvota: " + fmt.Sprintf("%.2f", a.Tip2Value) + " @ " + strings.ToUpper(a.Bookie2),
 		"ulog = ukupno * " + fmt.Sprintf("%.3f", a.StakePercentage2),
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
+		separator,
 		"ROI: " + fmt.Sprintf("%.2f", a.ROI) + "%",
 		"```",
 	}, "\n")
 }
 
 func PremiumArbToString(a Arb, sport string) string {
+	separatorLen := utility.Min(len(a.Team1)+len(a.Team2)+4, 33)
+	separator := strings.Repeat("=", separatorLen)
 	return strings.Join([]string{
 		"```",
 		strings.ToUpper(sport) + ", " + strings.ToUpper(a.League),
 		a.Team1 + " vs " + a.Team2,
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
+		separator,
 		strings.ToUpper(a.Tip1),
 		"kvota: " + fmt.Sprintf("%.2f", a.Tip1Value) + " @ " + strings.ToUpper(a.Bookie1),
 		"ulog = ukupno * " + fmt.Sprintf("%.3f", a.StakePercentage1),
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
+		separator,
 		strings.ToUpper(a.Tip2),
 		"kvota: " + fmt.Sprintf("%.2f", a.Tip2Value) + " @ " + strings.ToUpper(a.Bookie2),
 		"ulog = ukupno * " + fmt.Sprintf("%.3f", a.StakePercentage2),
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
+		separator,
 		"ROI: " + fmt.Sprintf("%.2f", a.ROI) + "%\n",
 
 		"Tip1 deviation table:\n" + a.tip1DeviationTable,
@@ -85,7 +92,7 @@ func getTipDeviationTable(vals []string, labels []string, index int) string {
 	return strings.Join([]string{labelsString, valuesString, arrowString}, "\n")
 }
 
-func BroadcastNewArbs(arbs []Arb, oldArbs map[string][]Arb, sport string) {
+func BroadcastNewArbs(arbs []Arb, oldArbs map[string][]Arb, sport string, chatIDs []string) {
 	if len(arbs) == 0 {
 		//telegram.BroadcastToDev(`Nema arbe :\\( \\- ` + sport)
 		oldArbs[sport] = nil

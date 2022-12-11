@@ -4,6 +4,7 @@ import (
 	"OISA_2x_sistem/scrape/maxbet/requests_to_server"
 	"OISA_2x_sistem/utility"
 	"fmt"
+	"strings"
 )
 
 func Get2outcomeOdds(matchIDs []int, subgameNames []string) []*[8]string {
@@ -47,6 +48,7 @@ func Get2outcomeOdds(matchIDs []int, subgameNames []string) []*[8]string {
 		}
 		matchesScrapedCounter++
 	}
+	fmt.Println("@MAXBET" + strings.Repeat("-", 26-len("@MAXBET")))
 	fmt.Println("Matches scraped: ", matchesScrapedCounter)
 	fmt.Println("Tips scraped: ", len(export))
 

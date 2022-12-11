@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 )
 
 func BasketballOddsParser(
@@ -88,6 +89,7 @@ func BasketballOddsParser(
 		}
 	}
 
+	fmt.Println("@SOCCERBET" + strings.Repeat("-", 26-len("@SOCCERBET")))
 	fmt.Println("Matches scraped: ", matchesScrapedCounter)
 	fmt.Println("Tips scraped: ", len(export))
 

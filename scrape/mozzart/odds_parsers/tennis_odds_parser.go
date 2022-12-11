@@ -5,6 +5,7 @@ import (
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func TennisOddsParser(sportID int, allSubgamesResponse map[string]interface{}) []*[8]string {
@@ -97,6 +98,7 @@ func TennisOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [
 		matchesScrapedCounter++
 	}
 
+	fmt.Println("@MOZZART" + strings.Repeat("-", 26-len("@MOZZART")))
 	fmt.Println("Matches scraped: ", matchesScrapedCounter)
 	fmt.Println("Tips scraped: ", len(export))
 

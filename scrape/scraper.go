@@ -7,6 +7,7 @@ import (
 	"OISA_2x_sistem/scrape/soccerbet"
 	"fmt"
 	"github.com/go-gota/gota/dataframe"
+	"sync"
 )
 
 func getScraper(bookie string) func(sport string) []*[8]string {
@@ -49,6 +50,7 @@ func GetSportsCurrentlyOfferedAtEachBookie(bookies []string) map[string][]string
 
 func ScrapeDataFromEachBookie(sportsAtBookie map[string][]string, sport string) map[string][]*[8]string {
 
+	bookiesWaitGroup := sync.WaitGroup{}
 	scrapedData := map[string][]*[8]string{}
 
 	for bookie, sports := range sportsAtBookie {
@@ -56,10 +58,14 @@ func ScrapeDataFromEachBookie(sportsAtBookie map[string][]string, sport string) 
 			if s != sport {
 				continue
 			}
-			scrapedData[bookie] = getScraper(bookie)(sport)
+			bookiesWaitGroup.Add(1)
+			go func(bookie, sport string) {
+				scrapedData[bookie] = getScraper(bookie)(sport)
+				bookiesWaitGroup.Done()
+			}(bookie, sport)
 		}
 	}
-
+	bookiesWaitGroup.Wait()
 	return scrapedData
 }
 

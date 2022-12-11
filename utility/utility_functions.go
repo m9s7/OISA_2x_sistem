@@ -2,6 +2,7 @@ package utility
 
 import (
 	"math"
+	"os"
 	"strings"
 )
 
@@ -74,4 +75,45 @@ func round(num float64) int {
 func ToFixed(num float64, precision int) float64 {
 	output := math.Pow(10, float64(precision))
 	return float64(round(num*output)) / output
+}
+
+func Min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func AppendToFile(fileName string, str string) error {
+	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return err
+	}
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(f)
+
+	_, err = f.WriteString(str)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func RemoveDuplicateStrings(strings []string) []string {
+	seenStrings := make(map[string]bool)
+	var uniqueStrings []string
+
+	for _, str := range strings {
+		if !seenStrings[str] {
+			uniqueStrings = append(uniqueStrings, str)
+			seenStrings[str] = true
+		}
+	}
+
+	return uniqueStrings
 }

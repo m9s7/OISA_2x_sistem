@@ -50,7 +50,7 @@ func Scrape(sport string) []*[8]string {
 	case utility.Soccer:
 		odds = odds_parsers2.SoccerOddsParser(getIDByNameMap[sport], allSubgamesResponse)
 	default:
-		panic("Sport offered at maxbet, but I dont offer it, why am I trying to scrape it?")
+		panic("Sport offered at mozzart, but I dont offer it, why am I trying to scrape it?")
 	}
 
 	standardization.StandardizeData(odds, sport)

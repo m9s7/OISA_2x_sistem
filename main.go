@@ -4,7 +4,9 @@ import (
 	"OISA_2x_sistem/find_arb"
 	"OISA_2x_sistem/merge"
 	"OISA_2x_sistem/scrape"
+	"OISA_2x_sistem/telegram"
 	"OISA_2x_sistem/utility"
+	"log"
 )
 
 func main() {
@@ -28,10 +30,13 @@ func main() {
 		utility.Soccer:     nil,
 	}
 
+	go telegram.ProvidePremiumService()
+	//fmt.Println(runtime.GOMAXPROCS(-1))
+
+	log.Println("Starting scraping...")
 	for {
 
 		sportsAtBookie := scrape.GetSportsCurrentlyOfferedAtEachBookie(bookies)
-
 		for _, sport := range sportsToScrape {
 
 			if !scrape.IsInAtLeast2Bookies(sport, sportsAtBookie) {
@@ -47,9 +52,9 @@ func main() {
 			//merge.PrintMergedData(mergedData)
 
 			arbs := find_arb.FindArb(mergedData)
-			find_arb.BroadcastNewArbs(arbs, oldArbs, sport)
-			//telegram.BroadcastToDev(find_arb.ArbToString(find_arb.GetExampleArbitrage(), "EXAMPLE SPORT"))
+			find_arb.BroadcastNewArbs(arbs, oldArbs, sport, telegram.ChatIDs)
 		}
+		//telegram.BroadcastToPremium(find_arb.PremiumArbToString(find_arb.GetExampleArbitrage(), "EXAMPLE SPORT"))
 	}
 
 }

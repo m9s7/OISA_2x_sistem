@@ -9,12 +9,12 @@ import (
 	"strings"
 )
 
-func broadcastToTelegram(msg string, chatID string) map[string]interface{} {
-	url := "https://api.telegram.org/bot" + getBotToken() + "/sendMessage"
+func broadcastToTelegram(msg string, chatID string, markdown string) map[string]interface{} {
+	url := "https://api.telegram.org/bot" + GetBotToken() + "/sendMessage"
 
 	payload := strings.NewReader(
 		"{\"text\":\"" + msg + "\"," +
-			"\"parse_mode\":\"MarkdownV2\"," +
+			"\"parse_mode\":\"" + markdown + "\"," +
 			"\"disable_web_page_preview\":false," +
 			"\"disable_notification\":false," +
 			"\"reply_to_message_id\":null," +
@@ -67,18 +67,24 @@ func checkIfSent(response map[string]interface{}, msg string, groupName string) 
 
 func BroadcastToFree(msg string) {
 	chatID := "-1001875397817"
-	response := broadcastToTelegram(msg, chatID)
+	response := broadcastToTelegram(msg, chatID, "MarkdownV2")
 	checkIfSent(response, msg, "free")
 }
 
 func BroadcastToPremium(msg string) {
-	chatID := "-1001701172026"
-	response := broadcastToTelegram(msg, chatID)
+
+	for _, user := range ChatIDs {
+		response := broadcastToTelegram(msg, user, "MarkdownV2")
+		checkIfSent(response, msg, "premium")
+	}
+
+	premiumChannel := "-1001701172026"
+	response := broadcastToTelegram(msg, premiumChannel, "MarkdownV2")
 	checkIfSent(response, msg, "premium")
 }
 
-func BroadcastToDev(msg string) {
+func BroadcastToDev(msg string, markdown string) {
 	chatID := "1678076367"
-	response := broadcastToTelegram(msg, chatID)
+	response := broadcastToTelegram(msg, chatID, markdown)
 	checkIfSent(response, msg, "dev")
 }
