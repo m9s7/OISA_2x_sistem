@@ -31,24 +31,22 @@ func addElToRecord(el *[8]string, bookieOrder int, record *[]string, indxMap map
 		(*record)[indxMap["tip2_name"]+1+bookieOrder] = (*el)[utility.Tip2Value]
 	} else {
 		// switch second record
-		(*record)[indxMap["tip1_name"]+1+bookieOrder] = (*el)[utility.Tip1Value]
-		(*record)[indxMap["tip2_name"]+1+bookieOrder] = (*el)[utility.Tip2Value]
+		(*record)[indxMap["tip1_name"]+1+bookieOrder] = (*el)[utility.Tip2Value]
+		(*record)[indxMap["tip2_name"]+1+bookieOrder] = (*el)[utility.Tip1Value]
 	}
 }
 
 func shouldSwitchTipVals(tipName string, sportName string) bool {
 
-	var tipNamesNotToSwitch [4]string
 	if sportName == utility.Tennis {
-		tipNamesNotToSwitch = [4]string{"TIE_BREAK_YES", "TIE_BREAK_NO", "TIE_BREAK_FST_SET_YES", "TIE_BREAK_FST_SET_NO"}
-	} else {
-		return false
-	}
-	for _, el := range tipNamesNotToSwitch {
-		if tipName == el {
-			return false
+		tipNamesNotToSwitch := [4]string{"TIE_BREAK_YES", "TIE_BREAK_NO", "TIE_BREAK_FST_SET_YES", "TIE_BREAK_FST_SET_NO"}
+		for _, el := range tipNamesNotToSwitch {
+			if tipName == el {
+				return false
+			}
 		}
 	}
+
 	return true
 }
 

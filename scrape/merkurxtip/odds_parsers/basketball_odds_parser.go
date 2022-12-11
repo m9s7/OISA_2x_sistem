@@ -27,6 +27,15 @@ func BasketballOddsParser(matchIDs []int) []*[8]string {
 			continue
 		}
 
+		if !checkIfMapHasFields(match, []string{"kickOffTime", "leagueName", "home", "away", "odds"}) {
+			fmt.Println("Merkurxtip: GetMatchOdds(matchID:" + strconv.Itoa(matchID) + ") has missing field, skipping it..")
+			continue
+		}
+		if !checkIfMapHasInterfaces(match, []string{"kickOffTime", "leagueName", "home", "away", "odds"}) {
+			fmt.Println("Merkurxtip: GetMatchOdds(matchID:" + strconv.Itoa(matchID) + ") has missing interface, skipping it..")
+			continue
+		}
+
 		e1 := &[4]string{
 			fmt.Sprintf("%.0f", match["kickOffTime"].(float64)),
 			match["leagueName"].(string),

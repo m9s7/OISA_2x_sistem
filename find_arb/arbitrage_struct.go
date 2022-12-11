@@ -1,48 +1,25 @@
 package find_arb
 
-import (
-	"fmt"
-	"strings"
-)
-
 type Arb struct {
 	Kickoff int
 	League  string
 	Team1   string
 	Team2   string
 
-	Tip1             string
-	Bookie1          string
-	Tip1Value        float64
-	StakePercentage1 float64
+	Tip1               string
+	Bookie1            string
+	Tip1Value          float64
+	StakePercentage1   float64
+	tip1DeviationTable string
 
-	Tip2             string
-	Bookie2          string
-	Tip2Value        float64
-	StakePercentage2 float64
+	Tip2               string
+	Bookie2            string
+	Tip2Value          float64
+	StakePercentage2   float64
+	tip2DeviationTable string
 
 	PlayFirst string
 	ROI       float64
-}
-
-func ArbToString(a Arb, sport string) string {
-	return strings.Join([]string{
-		"```",
-		strings.ToUpper(sport) + ", " + strings.ToUpper(a.League),
-		a.Team1 + " vs " + a.Team2,
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
-		strings.ToUpper(a.Tip1),
-		"kvota: " + fmt.Sprintf("%.2f", a.Tip1Value) + " @ " + strings.ToUpper(a.Bookie1),
-		"ulog = ukupno * " + fmt.Sprintf("%.3f", a.StakePercentage1),
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
-		strings.ToUpper(a.Tip2),
-		"kvota: " + fmt.Sprintf("%.2f", a.Tip2Value) + " @ " + strings.ToUpper(a.Bookie2),
-		"ulog = ukupno * " + fmt.Sprintf("%.3f", a.StakePercentage2),
-		strings.Repeat("=", len(a.Team1)+len(a.Team2)+4),
-		"Play first @ " + a.PlayFirst,
-		"ROI: " + fmt.Sprintf("%.2f", a.ROI) + "%",
-		"```",
-	}, "\n")
 }
 
 func GetExampleArbitrage() Arb {

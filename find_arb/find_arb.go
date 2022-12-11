@@ -1,7 +1,6 @@
 package find_arb
 
 import (
-	"OISA_2x_sistem/telegram"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"log"
@@ -19,9 +18,11 @@ func FindArb(records [][]string) []Arb {
 	var arbs []Arb
 
 	x := colIdxByNameMap(records[0])
+
 	// kick_off league_merkurxtip league_maxbet league_soccerbet league_mozzart 1 2
 	//tip1 tip1_merkurxtip tip1_maxbet tip1_soccerbet tip1_mozzart
 	//tip2 tip2_merkurxtip tip2_maxbet tip2_soccerbet tip2_mozzart
+	tipLabels := getTipValLabels(records[0], x)
 
 	for idx := range records[1:] {
 		record := records[idx+1]
@@ -66,15 +67,17 @@ func FindArb(records [][]string) []Arb {
 			Team1:   record[x["1"]],
 			Team2:   record[x["2"]],
 
-			Tip1:             record[x["tip1"]],
-			Bookie1:          bookie1,
-			Tip1Value:        tip1Max,
-			StakePercentage1: IAP1 / outlay,
+			Tip1:               record[x["tip1"]],
+			Bookie1:            bookie1,
+			Tip1Value:          tip1Max,
+			StakePercentage1:   IAP1 / outlay,
+			tip1DeviationTable: getTipDeviationTable(tip1Vals, tipLabels, relativeTip1Idx),
 
-			Tip2:             record[x["tip2"]],
-			Bookie2:          bookie2,
-			Tip2Value:        tip2Max,
-			StakePercentage2: IAP2 / outlay,
+			Tip2:               record[x["tip2"]],
+			Bookie2:            bookie2,
+			Tip2Value:          tip2Max,
+			StakePercentage2:   IAP2 / outlay,
+			tip2DeviationTable: getTipDeviationTable(tip2Vals, tipLabels, relativeTip2Idx),
 
 			PlayFirst: playFirst,
 			ROI:       utility.ToFixed(100*((1/outlay)-1), 2),
@@ -143,29 +146,13 @@ func tipDeviation(tipIdx int, tipVals []string) float64 {
 	return deviation / float64(len(tipVals)-1)
 }
 
-//TODO: move to telegram package
+func getTipValLabels(mergedRecordsLabelCol []string, colIdxByNameMap map[string]int) []string {
+	var tipLabels []string
+	for _, val := range mergedRecordsLabelCol[colIdxByNameMap["tip1"]+1 : colIdxByNameMap["tip2"]] {
+		bookie := strings.TrimPrefix(val, "tip1_")
+		label := bookieToLabel(bookie)
 
-func BroadcastNewArbs(arbs []Arb, oldArbs map[string][]Arb, sport string) {
-	if len(arbs) == 0 {
-		//telegram.BroadcastToDev(`Nema arbe :\\( \\- ` + sport)
-		oldArbs[sport] = nil
-		return
+		tipLabels = append(tipLabels, label)
 	}
-	for _, arb := range arbs {
-		if isArbInOldArbs(arb, oldArbs[sport]) {
-			continue
-		}
-		telegram.BroadcastToDev("FRISKE ARBE")
-		telegram.BroadcastToDev(ArbToString(arb, sport))
-	}
-	oldArbs[sport] = arbs
-}
-
-func isArbInOldArbs(arb Arb, oldArbs []Arb) bool {
-	for _, oldArb := range oldArbs {
-		if arb.Equals(oldArb) {
-			return true
-		}
-	}
-	return false
+	return tipLabels
 }
