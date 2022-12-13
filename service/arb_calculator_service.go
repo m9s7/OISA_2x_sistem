@@ -1,6 +1,7 @@
-package telegram
+package service
 
 import (
+	"OISA_2x_sistem/telegram"
 	"errors"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -10,23 +11,30 @@ import (
 	"strings"
 )
 
-func provideArbCalculatorService(updateMessage *tgbotapi.Message) (tgbotapi.MessageConfig, error) {
+// TODO: make this take the message and the source msg, so it doesnt have to import telegram and bot api, just works the numbers
+
+func ProvideArbCalculatorService(updateMessage *tgbotapi.Message) error {
+
 	capitalStr := strings.TrimPrefix(updateMessage.Text, "/ulog ")
 	capital, err := strconv.Atoi(capitalStr)
 	if err != nil {
 		log.Println(err.Error())
-		return tgbotapi.MessageConfig{}, errors.New("error converting capital to int")
+		return errors.New("error converting capital to int")
 	}
-	responseMsg, err := generateMsgReply(updateMessage.ReplyToMessage.Text, capital)
+
+	reply, err := generateArbCalculatorReply(updateMessage.ReplyToMessage.Text, capital)
 	if err != nil {
 		log.Println(err.Error())
-		return tgbotapi.MessageConfig{}, errors.New("error generating message reply")
+		return errors.New("error generating message reply")
 	}
 
-	msg := tgbotapi.NewMessage(updateMessage.Chat.ID, responseMsg)
-	msg.ReplyToMessageID = updateMessage.MessageID
+	response := telegram.ReplyToMsg(reply, updateMessage.MessageID, updateMessage.Chat.ID)
+	telegram.CheckIfSent(response,
+		"Error back sending ulog, calculation's good just sending failed",
+		strconv.FormatInt(updateMessage.Chat.ID, 10),
+	)
 
-	return msg, nil
+	return nil
 }
 
 func arbCalc(capital int, tip1StakePercentage float64, tip2StakePercentage float64) (string, string) {
@@ -35,7 +43,7 @@ func arbCalc(capital int, tip1StakePercentage float64, tip2StakePercentage float
 	return tip1Stake, tip2Stake
 }
 
-func generateMsgReply(arbString string, capital int) (string, error) {
+func generateArbCalculatorReply(arbString string, capital int) (string, error) {
 
 	bookie1, bookie2, err := extractBookies(arbString)
 	if err != nil {
@@ -58,9 +66,9 @@ func generateMsgReply(arbString string, capital int) (string, error) {
 	}
 
 	responseMsg := " ulog: \n" +
-		t1Investment + "@" + strings.ToLower(bookie1) + "\n" +
-		t2Investment + "@" + strings.ToLower(bookie2) + "\n" +
-		"\nprofit: " + fmt.Sprintf("%.0f", (roi/10)*float64(capital))
+		t1Investment + " @" + strings.ToLower(bookie1) + "\n" +
+		t2Investment + " @" + strings.ToLower(bookie2) + "\n" +
+		"\nPROFIT: " + fmt.Sprintf("%.0f\n_sigurica_", (roi/100)*float64(capital))
 
 	return responseMsg, nil
 
@@ -102,7 +110,7 @@ func extractROI(arbString string) (float64, error) {
 
 func extractBookies(arbString string) (string, string, error) {
 
-	re := regexp.MustCompile(`@ (.*?)\n`)
+	re := regexp.MustCompile(`@ ([A-Z]+?)\n`)
 	extractedBookies := re.FindAllStringSubmatch(arbString, -1)
 	if extractedBookies == nil {
 		return "", "", errors.New("failed to extract bookies")

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"OISA_2x_sistem/find_arb"
+	"OISA_2x_sistem/arbitrage"
 	"OISA_2x_sistem/merge"
 	"OISA_2x_sistem/scrape"
-	"OISA_2x_sistem/telegram"
+	"OISA_2x_sistem/service"
+	"OISA_2x_sistem/service/find_arbs"
 	"OISA_2x_sistem/utility"
 	"log"
 )
@@ -24,13 +25,13 @@ func main() {
 		"merkurxtip",
 	}
 
-	oldArbs := map[string][]find_arb.Arb{
+	service.OldArbsBySport = map[string][]arbitrage.Arb{
 		utility.Tennis:     nil,
 		utility.Basketball: nil,
 		utility.Soccer:     nil,
 	}
 
-	go telegram.ProvidePremiumService()
+	go service.ProvidePremiumService()
 	//fmt.Println(runtime.GOMAXPROCS(-1))
 
 	log.Println("Starting scraping...")
@@ -51,10 +52,10 @@ func main() {
 			}
 			//merge.PrintMergedData(mergedData)
 
-			arbs := find_arb.FindArb(mergedData)
-			find_arb.BroadcastNewArbs(arbs, oldArbs, sport, telegram.ChatIDs)
+			arbs := find_arbs.FindArb(mergedData, sport)
+			service.BroadcastNewArbs(arbs, sport)
 		}
-		//telegram.BroadcastToPremium(find_arb.PremiumArbToString(find_arb.GetExampleArbitrage(), "EXAMPLE SPORT"))
+		//telegram.BroadcastToPremium(arbitrage.ToStringPremium(arbitrage.GetExampleArbitrage(), "EXAMPLE SPORT"))
 	}
 
 }

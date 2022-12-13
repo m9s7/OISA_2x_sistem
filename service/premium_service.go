@@ -1,6 +1,7 @@
-package telegram
+package service
 
 import (
+	"OISA_2x_sistem/telegram"
 	"OISA_2x_sistem/utility"
 	"bufio"
 	"errors"
@@ -16,12 +17,12 @@ import (
 var ChatIDs []string
 
 func ProvidePremiumService() {
-	bot, err := tgbotapi.NewBotAPI(GetBotToken())
+	bot, err := tgbotapi.NewBotAPI(telegram.GetBotToken())
 	if err != nil {
 		log.Panic(err)
 	}
 
-	ChatIDs = loadPremiumUsers("telegram\\users.txt")
+	ChatIDs = loadPremiumUsers("service\\users.txt")
 
 	//bot.Debug = true
 
@@ -45,24 +46,31 @@ func ProvidePremiumService() {
 			newUser, err := registerNewUser(update.Message.Text, update.Message.Chat.ID)
 			if err != nil {
 				log.Println(err.Error())
-				BroadcastToDev("Error while writing user to file: "+err.Error(), "HTML")
+				telegram.BroadcastToDev("Error while writing user to file: "+err.Error(), "HTML")
 			}
+			//:TODO lock this when writing to it, but it happens so rarely that it's not worth it
 			ChatIDs = append(ChatIDs, newUser)
 			continue
 		}
 
+		if update.Message.ReplyToMessage == nil {
+			continue
+		}
+
 		// ulog
-		if update.Message.ReplyToMessage != nil && strings.EqualFold(update.Message.Command(), "ulog") {
-			msg, err := provideArbCalculatorService(update.Message)
+		if strings.EqualFold(update.Message.Command(), "ulog") {
+			err := ProvideArbCalculatorService(update.Message)
 			if err != nil {
 				log.Println(err.Error())
-				BroadcastToDev("Error while providing arb calculator service: "+err.Error(), "HTML")
+				errorMsg := "Error while providing arb calculator service: " + err.Error() + "msg sent: " + update.Message.Text
+				telegram.BroadcastToDev(errorMsg, "HTML")
 				continue
 			}
-			_, err = bot.Send(msg)
-			if err != nil {
-				return
-			}
+		}
+
+		// extra
+		if strings.EqualFold(update.Message.Command(), "extra") {
+			ProvideArbExtraDetailsService(update.Message)
 		}
 
 	}
@@ -73,10 +81,11 @@ func registerNewUser(msgText string, chatID int64) (string, error) {
 	user := strings.TrimPrefix(msgText, "/register ")
 	chatIDStr := strconv.Itoa(int(chatID))
 
-	BroadcastToDev(
-		EscapeTelegramSpecChars("User: "+user+" has started the bot!\nChat ID: "+chatIDStr), "HTML")
+	// TODO: move to premium, else move to premium_service package
+	telegram.BroadcastToDev(
+		telegram.EscapeTelegramSpecChars("User: "+user+" has started the bot!\nChat ID: "+chatIDStr), "HTML")
 
-	err := utility.AppendToFile("telegram\\users.txt", user+": "+chatIDStr+"\n")
+	err := utility.AppendToFile("service\\users.txt", user+": "+chatIDStr+"\n")
 	if err != nil {
 		return " ", errors.New("error appending to file")
 	}
@@ -112,4 +121,18 @@ func loadPremiumUsers(premiumUsersFilePath string) []string {
 	}
 
 	return utility.RemoveDuplicateStrings(premiumUsersCharIDs)
+}
+
+// TODO: keep this here, other functions to premium_service package
+
+func BroadcastToPremium(msg string) {
+
+	for _, user := range ChatIDs {
+		response := telegram.BroadcastToTelegram(msg, user, "MarkdownV2")
+		telegram.CheckIfSent(response, msg, "service")
+	}
+
+	premiumChannel := "-1001701172026"
+	response := telegram.BroadcastToTelegram(msg, premiumChannel, "MarkdownV2")
+	telegram.CheckIfSent(response, msg, "service")
 }

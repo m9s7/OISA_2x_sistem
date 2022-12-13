@@ -24,3 +24,16 @@ func EscapeTelegramSpecChars(str string) string {
 
 	return str
 }
+
+func CheckIfSent(response map[string]interface{}, msg string, groupName string) {
+	if response == nil {
+		log.Println("Message to", groupName, "group WAS NOT sent!")
+		log.Println("Message: ", msg)
+		return
+	}
+	if answer, ok := response["ok"]; !ok || answer.(bool) != true {
+		log.Println("Message to", groupName, "group WAS NOT sent!")
+		log.Println("Message: ", msg)
+		log.Println("Error code:", response["error_code"].(float64), "Description:", response["description"].(string))
+	}
+}
