@@ -30,9 +30,7 @@ type Arb struct {
 
 func (a Arb) Equals(b Arb) bool {
 	epsilon := 0.001
-	return a.Kickoff == b.Kickoff &&
-		a.Sport == b.Sport &&
-		a.League == b.League &&
+	return a.Sport == b.Sport &&
 		a.Team1 == b.Team1 &&
 		a.Team2 == b.Team2 &&
 		// Compare tip1

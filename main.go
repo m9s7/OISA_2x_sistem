@@ -6,8 +6,9 @@ import (
 	"OISA_2x_sistem/scrape"
 	"OISA_2x_sistem/service"
 	"OISA_2x_sistem/service/find_arbs"
+	"OISA_2x_sistem/service/premium_services"
+	"OISA_2x_sistem/telegram"
 	"OISA_2x_sistem/utility"
-	"log"
 )
 
 func main() {
@@ -25,7 +26,7 @@ func main() {
 		"merkurxtip",
 	}
 
-	service.OldArbsBySport = map[string][]arbitrage.Arb{
+	find_arbs.OldArbsBySport = map[string][]arbitrage.Arb{
 		utility.Tennis:     nil,
 		utility.Basketball: nil,
 		utility.Soccer:     nil,
@@ -34,7 +35,6 @@ func main() {
 	go service.ProvidePremiumService()
 	//fmt.Println(runtime.GOMAXPROCS(-1))
 
-	log.Println("Starting scraping...")
 	for {
 
 		sportsAtBookie := scrape.GetSportsCurrentlyOfferedAtEachBookie(bookies)
@@ -53,9 +53,29 @@ func main() {
 			//merge.PrintMergedData(mergedData)
 
 			arbs := find_arbs.FindArb(mergedData, sport)
-			service.BroadcastNewArbs(arbs, sport)
+			broadcastNewArbs(arbs, sport)
 		}
 		//telegram.BroadcastToPremium(arbitrage.ToStringPremium(arbitrage.GetExampleArbitrage(), "EXAMPLE SPORT"))
 	}
 
+}
+
+func broadcastNewArbs(arbs []arbitrage.Arb, sport string) {
+	if len(arbs) == 0 {
+		find_arbs.OldArbsBySport[sport] = nil
+		return
+	}
+	for _, arb := range arbs {
+		if arb.IsIn(find_arbs.OldArbsBySport[sport]) || arb.ROI < 0.1 {
+			continue
+		}
+
+		if arb.ROI <= 1.5 {
+			telegram.BroadcastToFree(arb.ToStringFree())
+		}
+		if arb.ROI >= 1.0 {
+			telegram.BroadcastToPremium(arb.ToStringPremium(), premium_services.ChatIDs)
+		}
+	}
+	find_arbs.OldArbsBySport[sport] = arbs
 }

@@ -105,3 +105,15 @@ func BroadcastToDev(msg string, markdown string) {
 	response := BroadcastToTelegram(msg, chatID, markdown)
 	CheckIfSent(response, msg, "dev")
 }
+
+func BroadcastToPremium(msg string, premiumChats []string) {
+
+	for _, user := range premiumChats {
+		response := BroadcastToTelegram(msg, user, "MarkdownV2")
+		CheckIfSent(response, msg, "service")
+	}
+
+	premiumChannel := "-1001701172026"
+	response := BroadcastToTelegram(msg, premiumChannel, "MarkdownV2")
+	CheckIfSent(response, msg, "service")
+}

@@ -1,40 +1,28 @@
-package service
+package premium_services
 
 import (
-	"OISA_2x_sistem/telegram"
 	"errors"
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"log"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
-// TODO: make this take the message and the source msg, so it doesnt have to import telegram and bot api, just works the numbers
+func ProvideArbCalculatorService(arbString string, userReply string) (string, error) {
 
-func ProvideArbCalculatorService(updateMessage *tgbotapi.Message) error {
+	capitalStr := strings.TrimLeft(userReply, "/UuLlOoGg ")
 
-	capitalStr := strings.TrimPrefix(updateMessage.Text, "/ulog ")
 	capital, err := strconv.Atoi(capitalStr)
 	if err != nil {
-		log.Println(err.Error())
-		return errors.New("error converting capital to int")
+		return "", err
 	}
 
-	reply, err := generateArbCalculatorReply(updateMessage.ReplyToMessage.Text, capital)
+	reply, err := generateArbCalculatorReply(arbString, capital)
 	if err != nil {
-		log.Println(err.Error())
-		return errors.New("error generating message reply")
+		return "", err
 	}
 
-	response := telegram.ReplyToMsg(reply, updateMessage.MessageID, updateMessage.Chat.ID)
-	telegram.CheckIfSent(response,
-		"Error back sending ulog, calculation's good just sending failed",
-		strconv.FormatInt(updateMessage.Chat.ID, 10),
-	)
-
-	return nil
+	return reply, nil
 }
 
 func arbCalc(capital int, tip1StakePercentage float64, tip2StakePercentage float64) (string, string) {
@@ -68,7 +56,7 @@ func generateArbCalculatorReply(arbString string, capital int) (string, error) {
 	responseMsg := " ulog: \n" +
 		t1Investment + " @" + strings.ToLower(bookie1) + "\n" +
 		t2Investment + " @" + strings.ToLower(bookie2) + "\n" +
-		"\nPROFIT: " + fmt.Sprintf("%.0f\n_sigurica_", (roi/100)*float64(capital))
+		"\nPROFIT: " + fmt.Sprintf("%.0f\n_sigurica ca ca..._", (roi/100)*float64(capital))
 
 	return responseMsg, nil
 
