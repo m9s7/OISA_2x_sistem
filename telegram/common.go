@@ -8,7 +8,7 @@ import (
 )
 
 func GetBotToken() string {
-	err := godotenv.Load("telegram\\.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalln("Telegram: Error loading .env")
 	}

@@ -5,6 +5,7 @@ import (
 	"OISA_2x_sistem/scrape/merkurxtip/requests_to_server"
 	"OISA_2x_sistem/scrape/merkurxtip/server_response_parsers"
 	"OISA_2x_sistem/scrape/merkurxtip/standardization"
+	"OISA_2x_sistem/settings"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"time"
@@ -23,11 +24,11 @@ func GetSportsCurrentlyOffered() []string {
 
 func getMatchIDs(sport string) []int {
 
-	response := requests_to_server.GetSidebarSportsBlocking()
-	sidebarSportIDByName := server_response_parsers.ParseGetSidebarSports(response)
+	sidebarSportIDByName := getSidebarSports()
+
 	sportID := sidebarSportIDByName[sport]
 
-	response = requests_to_server.GetSidebarSportGroupsBlocking(sportID)
+	response := requests_to_server.GetSidebarSportGroupsBlocking(sportID)
 	groupIDs := server_response_parsers.ParseGetSidebarGroups(response)
 
 	var leagueIDs []string
@@ -72,4 +73,20 @@ func Scrape(sport string) []*[8]string {
 
 	fmt.Printf("--- %s seconds ---\n", time.Since(startTime))
 	return odds
+}
+
+func getSidebarSports() map[string]string {
+
+	var sidebarSportsIDsByName map[string]string
+
+	for i := 0; i < settings.NumOfTries; i++ {
+		response := requests_to_server.GetSidebarSportsBlocking()
+		sidebarSportsIDsByName = server_response_parsers.ParseGetSidebarSports(response)
+
+		if sidebarSportsIDsByName != nil {
+			break
+		}
+	}
+
+	return sidebarSportsIDsByName
 }

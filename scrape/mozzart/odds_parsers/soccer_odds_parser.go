@@ -1,39 +1,39 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/scrape/mozzart/requests_to_server"
+	"OISA_2x_sistem/requests_to_server/mozzart"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"strconv"
 	"strings"
 )
 
-func SoccerOddsParser(sportID int, allSubgamesResponse map[string]interface{}) []*[8]string {
+func SoccerOddsParser(sportID int, allSubgamesResponse map[string][]mozzart.Offer) []*[8]string {
 
 	matchesScrapedCounter := 0
 	var export []*[8]string
 
-	matchesResponse := requests_to_server.GetMatchIDsBlocking(sportID)
-	exportHelp := initExportHelp(matchesResponse["matches"].([]interface{}))
+	matchesResponse, _ := mozzart.GetMatchIDs(sportID)
+	exportHelp := initExportHelp(matchesResponse.Matches)
 
-	var exportHelpKeys []int
+	var matchIDs []int
 	for k := range exportHelp {
-		exportHelpKeys = append(exportHelpKeys, k)
+		matchIDs = append(matchIDs, k)
 	}
 
 	subgameIDs := getSoccerSubgameIDs(allSubgamesResponse[strconv.Itoa(sportID)])
-	//fmt.Println(subgameIDs)
-	odds := requests_to_server.GetOddsBlocking(exportHelpKeys, subgameIDs)
+	odds := mozzart.GetOdds(matchIDs, subgameIDs)
 
-	for _, o := range odds {
+	for _, matchOdds := range odds {
 
-		if _, ok := o["kodds"]; !ok {
+		if matchOdds.Kodds == nil {
 			continue
 		}
-		matchID := int(o["id"].(float64))
 
-		// Collect all tips I'm interested in
-		tip1, tip2 := collectFocusedSoccerTips(o)
+		matchID := matchOdds.Id
+
+		// Collect all tips I'm interested in (and their values)
+		tip1, tip2 := collectFocusedSoccerTips(matchOdds)
 
 		// Match collected tips
 		for t1Key, t1Val := range tip1 {
@@ -91,20 +91,23 @@ func ugConditionSatisfied(subgame string) bool {
 		subgame == "0"
 }
 
-func getSoccerSubgameIDs(offers interface{}) []int {
+func getSoccerSubgameIDs(offers []mozzart.Offer) []int {
+	//type Offer struct {
+	//    Name           string
+	//    RegularHeaders []Header
+	//}
+
 	var focusedSubgames []int
 
-	for _, offer := range offers.([]interface{}) {
-		offer := offer.(map[string]interface{})
+	for _, offer := range offers {
 
-		if offerName, ok := offer["name"]; !ok || offerName != "Kompletna ponuda" {
+		if offer.Name != "Kompletna ponuda" {
 			continue
 		}
 
-		for _, header := range offer["regularHeaders"].([]interface{}) {
-			header := header.(map[string]interface{})
+		for _, header := range offer.RegularHeaders {
 
-			game := header["gameName"].([]interface{})[0].(map[string]interface{})["name"].(string)
+			game := header.GameName[0].Name
 
 			wantedGames := []string{
 				"Ukupno golova na meču", "Tim 1 daje gol", "Tim 2 daje gol",
@@ -112,10 +115,9 @@ func getSoccerSubgameIDs(offers interface{}) []int {
 				"Ukupno golova drugo poluvreme", "Tim 1 golovi drugo poluvreme", "Tim 2 golovi drugo poluvreme",
 			}
 			if utility.IsElInSliceSTR(game, wantedGames) {
-				for _, subgame := range header["subGameName"].([]interface{}) {
-					subgame := subgame.(map[string]interface{})
-					if ugConditionSatisfied(subgame["name"].(string)) {
-						focusedSubgames = append(focusedSubgames, int(subgame["id"].(float64)))
+				for _, subgame := range header.SubgameName {
+					if ugConditionSatisfied(subgame.Name) {
+						focusedSubgames = append(focusedSubgames, subgame.Id)
 					}
 				}
 			}
@@ -126,20 +128,18 @@ func getSoccerSubgameIDs(offers interface{}) []int {
 				"Tačan broj golova drugo poluvreme",
 			}
 			if utility.IsElInSliceSTR(game, wantedGames) {
-				for _, subgame := range header["subGameName"].([]interface{}) {
-					subgame := subgame.(map[string]interface{})
-					if subgame["name"].(string) == "0" {
-						focusedSubgames = append(focusedSubgames, int(subgame["id"].(float64)))
+				for _, subgame := range header.SubgameName {
+					if subgame.Name == "0" {
+						focusedSubgames = append(focusedSubgames, subgame.Id)
 					}
 				}
 			}
 
 			wantedSubgames := []string{"gg", "ng", "1gg", "1ng", "2gg", "2ng"}
 			if game == "Oba tima daju gol" {
-				for _, subgame := range header["subGameName"].([]interface{}) {
-					subgame := subgame.(map[string]interface{})
-					if utility.IsElInSliceSTR(subgame["name"].(string), wantedSubgames) {
-						focusedSubgames = append(focusedSubgames, int(subgame["id"].(float64)))
+				for _, subgame := range header.SubgameName {
+					if utility.IsElInSliceSTR(subgame.Name, wantedSubgames) {
+						focusedSubgames = append(focusedSubgames, subgame.Id)
 					}
 				}
 			}
@@ -150,25 +150,17 @@ func getSoccerSubgameIDs(offers interface{}) []int {
 	return utility.RemoveDuplicates(&focusedSubgames)
 }
 
-func collectFocusedSoccerTips(odds map[string]interface{}) (map[[2]string]string, map[[2]string]string) {
+func collectFocusedSoccerTips(odds mozzart.Odds) (map[[2]string]string, map[[2]string]string) {
 
 	tip1 := map[[2]string]string{}
 	tip2 := map[[2]string]string{}
 
-	for _, sg := range odds["kodds"].(map[string]interface{}) {
-		sg, ok := sg.(map[string]interface{})
-		if !ok {
-			continue
-		}
-		_, ok = sg["subGame"]
-		if !ok {
-			continue
-		}
+	for _, subgameOdds := range odds.Kodds {
 
-		game := sg["subGame"].(map[string]interface{})["gameShortName"].(string)
-		subgame := sg["subGame"].(map[string]interface{})["subGameName"].(string)
+		game := subgameOdds.SubGame.GameShortName
+		subgame := subgameOdds.SubGame.SubGameName
 		key := [2]string{game, subgame}
-		val := sg["value"].(string)
+		val := subgameOdds.Value
 
 		focusedSubgames := []string{
 			"ug", "1ug", "2ug", "tm1", "tm2",

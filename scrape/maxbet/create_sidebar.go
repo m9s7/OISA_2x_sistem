@@ -1,24 +1,33 @@
 package maxbet
 
-import "strings"
+import (
+	"OISA_2x_sistem/requests_to_server/maxbet"
+	"strings"
+)
 
-func createSidebar(sidebarSportsJSON []map[string]interface{}) map[string][]int {
+func createSidebar(response []maxbet.SidebarSport) map[string][]int {
+
 	sports := make(map[string][]int)
-	for _, sport := range sidebarSportsJSON {
+	for _, sport := range response {
 
 		var leagueBetIds []int
+		for _, league := range sport.Leagues {
 
-		for _, leagueDict := range sport["leagues"].([]interface{}) {
-			leagueDict := leagueDict.(map[string]interface{})
-			if strings.HasPrefix(leagueDict["name"].(string), "Max Bonus Tip") {
+			if strings.HasPrefix(league.Name, "Max Bonus Tip") {
 				continue
 			}
-			leagueBetIds = append(leagueBetIds, int(leagueDict["betLeagueId"].(float64)))
+			if league.Active == false || league.Blocked == true {
+				continue
+			}
+			leagueBetIds = append(leagueBetIds, league.BetLeagueId)
+
 		}
 
 		if len(leagueBetIds) != 0 {
-			sports[sport["name"].(string)] = leagueBetIds
+			sports[sport.Name] = leagueBetIds
 		}
+
 	}
+	
 	return sports
 }

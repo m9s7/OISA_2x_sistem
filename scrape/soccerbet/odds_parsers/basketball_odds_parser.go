@@ -1,8 +1,7 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/scrape/soccerbet/requests_to_server"
-	"OISA_2x_sistem/scrape/soccerbet/server_response_parsers"
+	"OISA_2x_sistem/requests_to_server/soccerbet"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"log"
@@ -11,75 +10,72 @@ import (
 )
 
 func BasketballOddsParser(
-	sidebarLeagues []interface{},
-	betgameByIdMap map[int]map[string]interface{},
-	betgameOutcomeByIdMap map[int]map[string]interface{},
-	betgameGroupByIdMap map[int]map[string]interface{},
+	sidebarLeagues []soccerbet.CompetitionMasterData,
+	betgameByIdMap map[int]*soccerbet.Betgame,
+	betgameOutcomeByIdMap map[int]*soccerbet.BetgameOutcome,
+	betgameGroupByIdMap map[int]*soccerbet.BetgameGroup,
 ) []*[8]string {
 
 	matchesScrapedCounter := 0
 	var export []*[8]string
 
 	for _, league := range sidebarLeagues {
-		league := league.(map[string]interface{})
-		leagueID := int(league["Id"].(float64))
 
-		response := requests_to_server.GetLeagueMatchesInfo(leagueID)
-		if response == nil {
-			fmt.Println("Soccerbet: GetLeagueMatchesInfo(leagueID:" + strconv.Itoa(leagueID) + ") is None, skipping it..")
+		matchesInfo, err := soccerbet.GetLeagueMatchesInfo(league.Id)
+		if err != nil {
+			fmt.Println("Soccerbet: GetLeagueMatchesInfo(leagueID:" + strconv.Itoa(league.Id) + ") is None, skipping it..")
 			continue
 		}
-		matchInfoList := server_response_parsers.ParseGetLeagueMatchesInfo(response)
 
-		for _, match := range matchInfoList {
-			e1 := &[4]string{match["kickoff"].(string), league["Name"].(string), match["home"].(string), match["away"].(string)}
+		for _, match := range matchesInfo {
 
-			matchID := int(match["match_id"].(float64))
-			matchOdds := requests_to_server.GetMatchOddsValues(matchID)
-			if matchOdds == nil {
-				fmt.Println("Soccerbet: GetMatchOddsValues(matchID:" + strconv.Itoa(matchID) + ") is None, skipping it..")
+			e1 := &[4]string{match.StartDate, league.Name, match.HomeCompetitorName, match.AwayCompetitorName}
+
+			matchOdds, err := soccerbet.GetMatchOddsValues(match.Id)
+			if err != nil {
+				fmt.Println("Soccerbet: GetMatchOddsValues(matchID:" + strconv.Itoa(match.Id) + ") is None, skipping it..")
 				continue
 			}
 			exportMatchHelper := map[string]*[4]string{}
 
 			for _, odds := range matchOdds {
-				if !odds["IsEnabled"].(bool) {
+				if !odds.IsEnabled {
 					continue
 				}
 
-				outcome := betgameOutcomeByIdMap[int(odds["BetGameOutcomeId"].(float64))]
-				betgame := betgameByIdMap[int(outcome["BetGameId"].(float64))]
-				betgameGroup := betgameGroupByIdMap[int(betgame["BetGameGroupId"].(float64))]
+				outcome := betgameOutcomeByIdMap[odds.BetGameOutcomeId]
+				betgame := betgameByIdMap[outcome.BetGameId]
+				betgameGroup := betgameGroupByIdMap[betgame.BetGameGroupId]
 
-				betgameName := betgame["Name"].(string)
-				betgameGroupName := betgameGroup["Name"].(string)
-				outcomeName := outcome["Name"].(string)
+				tipVal := odds.Odds
 
-				tipVal := odds["Odds"].(float64)
-
-				if betgameGroupName != "MEČ" || betgameName != "Konačni Ishod" {
+				if betgameGroup.Name != "MEČ" || betgame.Name != "Konačni Ishod" {
 					continue
 				}
-				tipComboKey := betgameGroupName + " " + betgameName
+				fmt.Println(betgameGroup.Name, betgame.Name)
+
 				var exportMatchHelperKeys []string
 				for key := range exportMatchHelper {
 					exportMatchHelperKeys = append(exportMatchHelperKeys, key)
 				}
+
+				tipComboKey := betgameGroup.Name + " " + betgame.Name
 
 				if !utility.IsElInSliceSTR(tipComboKey, exportMatchHelperKeys) {
 					exportMatchHelper[tipComboKey] = &[4]string{}
 				}
 
 				// KI_W/OT
-				if outcome["Description"].(string) == "Domaćin pobeđuje na meču" && outcomeName == "1" {
-					exportMatchHelper[tipComboKey][0] = outcome["CodeForPrinting"].(string) // maybe deref EMH[TCK] here
+				if outcome.Description == "Domaćin pobeđuje na meču" && outcome.Name == "1" {
+					exportMatchHelper[tipComboKey][0] = outcome.CodeForPrinting
 					exportMatchHelper[tipComboKey][1] = fmt.Sprintf("%.2f", tipVal)
-				} else if outcome["Description"].(string) == "Gost pobeđuje na meču" && outcomeName == "2" {
-					exportMatchHelper[tipComboKey][2] = outcome["CodeForPrinting"].(string)
+				} else if outcome.Description == "Gost pobeđuje na meču" && outcome.Name == "2" {
+					exportMatchHelper[tipComboKey][2] = outcome.CodeForPrinting
 					exportMatchHelper[tipComboKey][3] = fmt.Sprintf("%.2f", tipVal)
 				} else {
-					log.Fatalln(tipComboKey, outcomeName, outcome["Description"].(string), outcome["CodeForPrinting"].(string), tipVal)
+					log.Fatalln(tipComboKey, outcome.Name, outcome.Description, outcome.CodeForPrinting, tipVal)
 				}
+
 			}
 
 			for _, e2 := range exportMatchHelper {

@@ -1,11 +1,14 @@
 package server_response_parsers
 
-func ParseGetSidebarSportsAndLeagues(response []map[string]interface{}) map[string]int {
-	getNameByIDMap := map[string]int{}
-	for _, mapObj := range response {
-		name := mapObj["name"].(string)
-		id := int(mapObj["id"].(float64))
-		getNameByIDMap[name] = id
+import "OISA_2x_sistem/requests_to_server/mozzart"
+
+func GetSportIDByNameMap(response []mozzart.Sport) map[string]int {
+
+	sportIDByName := map[string]int{}
+
+	for _, sport := range response {
+		sportIDByName[sport.Name] = sport.Id
 	}
-	return getNameByIDMap
+
+	return sportIDByName
 }

@@ -1,7 +1,7 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/scrape/maxbet/requests_to_server"
+	"OISA_2x_sistem/requests_to_server/maxbet"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"log"
@@ -58,33 +58,38 @@ var goloviSubgames = map[string]map[string]interface{}{
 }
 
 func GetSoccerOdds(matchIDs []int) []*[8]string {
+
 	matchesScrapedCounter := 0
 	var export []*[8]string
+
 	for _, matchID := range matchIDs {
-		match := requests_to_server.GetMatchData(matchID)
-		if match == nil {
+		
+		match, err := maxbet.GetMatchData(matchID)
+		if err != nil {
+			fmt.Println(err)
 			continue
 		}
 
 		e1 := &[4]string{
-			fmt.Sprintf("%.0f", match["kickOffTime"].(float64)),
-			match["leagueName"].(string),
-			match["home"].(string),
-			match["away"].(string),
+			fmt.Sprintf("%.0f", match.KickOffTime),
+			match.LeagueName,
+			match.Home,
+			match.Away,
 		}
 
-		for _, subgame := range match["odBetPickGroups"].([]interface{}) {
-			subgame := subgame.(map[string]interface{})
+		for _, subgame := range match.OdBetPickGroups {
 
 			// Process NG GG
-			if subgame["name"].(string) == "GG - NG " {
+			if subgame.Name == "GG - NG " {
+
 				var tipsKeys []string
 				tipsVals := map[string]float64{}
-				for _, tip := range subgame["tipTypes"].([]interface{}) {
-					tip := tip.(map[string]interface{})
-					tipsVals[tip["name"].(string)] = tip["value"].(float64)
-					tipsKeys = append(tipsKeys, tip["name"].(string))
+
+				for _, tip := range subgame.TipTypes {
+					tipsVals[tip.Name] = tip.Value
+					tipsKeys = append(tipsKeys, tip.Name)
 				}
+
 				tipCombos := [3][2]string{{"GG", "NG"}, {"GG1", "NG1"}, {"GG2", "NG2"}}
 				for _, tipCombo := range tipCombos {
 					if !utility.IsElInSliceSTR(tipCombo[0], tipsKeys) || !utility.IsElInSliceSTR(tipCombo[1], tipsKeys) {
@@ -108,29 +113,27 @@ func GetSoccerOdds(matchIDs []int) []*[8]string {
 				goloviSubgamesKeys[i] = k
 				i++
 			}
-			if !utility.IsElInSliceSTR(subgame["name"].(string), goloviSubgamesKeys) {
+			if !utility.IsElInSliceSTR(subgame.Name, goloviSubgamesKeys) {
 				continue
 			}
 
 			// Preprocess for UG subgames
 			tips := getAllSubgameTips(subgame)
-			subgameName := subgame["name"].(string)
 
 			// Process 0-x and x+ combinations
 			for _, tip1 := range tips {
-				if !isOXtip(tip1, subgameName) {
+				if !isOXtip(tip1, subgame.Name) {
 					continue
 				}
-				tip2 := makeXPlusTipFromOXTip(tip1, subgameName)
+				tip2 := makeXPlusTipFromOXTip(tip1, subgame.Name)
 
 				indexOfTip2InTips := utility.IndexOf(tip2, tips)
 				if indexOfTip2InTips == -1 {
 					continue
 				}
 
-				TT := subgame["tipTypes"].([]interface{})
-				tip1Value := TT[utility.IndexOf(tip1, tips)].(map[string]interface{})["value"].(float64)
-				tip2Value := TT[indexOfTip2InTips].(map[string]interface{})["value"].(float64)
+				tip1Value := subgame.TipTypes[utility.IndexOf(tip1, tips)].Value
+				tip2Value := subgame.TipTypes[indexOfTip2InTips].Value
 
 				if tip1Value == 0 && tip2Value == 0 {
 					continue
@@ -143,7 +146,7 @@ func GetSoccerOdds(matchIDs []int) []*[8]string {
 			}
 
 			// Process T0 and 1+ combo
-			s := goloviSubgames[subgame["name"].(string)]
+			s := goloviSubgames[subgame.Name]
 			tip1 := s["tip1_special"].(string)
 			tip2 := s["prefix"].(string) + "1+"
 
@@ -151,15 +154,14 @@ func GetSoccerOdds(matchIDs []int) []*[8]string {
 			if tip1IndexInTips == -1 {
 				continue
 			}
-			TT := subgame["tipTypes"].([]interface{})
-			tip1Value := TT[tip1IndexInTips].(map[string]interface{})["value"].(float64)
+			tip1Value := subgame.TipTypes[tip1IndexInTips].Value
 
 			// get tip2 value
 			tip2IndexInTips := utility.IndexOf(tip2, tips)
 			if tip1Value == 0 || tip2IndexInTips == -1 {
 				continue
 			}
-			tip2Value := TT[tip2IndexInTips].(map[string]interface{})["value"].(float64)
+			tip2Value := subgame.TipTypes[tip2IndexInTips].Value
 
 			if tip1Value == 0 && tip2Value == 0 {
 				continue
@@ -180,12 +182,14 @@ func GetSoccerOdds(matchIDs []int) []*[8]string {
 	return export
 }
 
-func getAllSubgameTips(subgame map[string]interface{}) []string {
-	tips := make([]string, len(subgame["tipTypes"].([]interface{})))
-	for i, tip := range subgame["tipTypes"].([]interface{}) {
-		tip := tip.(map[string]interface{})
-		tips[i] = tip["name"].(string)
+func getAllSubgameTips(subgame maxbet.OddBetPickGroup) []string {
+
+	tips := make([]string, len(subgame.TipTypes))
+
+	for i, tip := range subgame.TipTypes {
+		tips[i] = tip.Name
 	}
+
 	return tips
 }
 

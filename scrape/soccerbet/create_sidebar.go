@@ -1,33 +1,28 @@
 package soccerbet
 
 import (
-	"OISA_2x_sistem/scrape/soccerbet/requests_to_server"
+	"OISA_2x_sistem/requests_to_server/soccerbet"
 	"OISA_2x_sistem/scrape/soccerbet/server_response_parsers"
 	"OISA_2x_sistem/utility"
+	"fmt"
 )
 
-func createSidebar(masterData map[string]interface{}, sportNameByIDMap map[int]string) map[string][]interface{} {
-	response := requests_to_server.GetSidebarLeagueIDsBlocking()
+func createSidebar(masterData *soccerbet.MasterData, sportNameByIDMap map[int]string) map[string][]soccerbet.CompetitionMasterData {
+	response, err := soccerbet.GetSidebarLeagueIDs()
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
 	leagueIDs := server_response_parsers.ParseGetSidebarLeagueIDs(response)
 
-	sidebar := map[string][]interface{}{}
+	sidebar := map[string][]soccerbet.CompetitionMasterData{}
 
-	competitionsData := masterData["CompetitionsData"].(map[string]interface{})
-	competitions := competitionsData["Competitions"].([]interface{})
+	for _, league := range masterData.CompetitionsData.Competitions {
 
-	for _, league := range competitions {
-		league := league.(map[string]interface{})
-		leagueID := int(league["Id"].(float64))
-		if utility.IsElInSliceINT(leagueID, leagueIDs) {
-			sportName := sportNameByIDMap[int(league["SportId"].(float64))]
+		if utility.IsElInSliceINT(league.Id, leagueIDs) {
 
-			var sidebarKeys []string
-			for key := range sidebar {
-				sidebarKeys = append(sidebarKeys, key)
-			}
-			if !utility.IsElInSliceSTR(sportName, sidebarKeys) {
-				sidebar[sportName] = []interface{}{}
-			}
+			sportName := sportNameByIDMap[league.SportId]
+
 			sidebar[sportName] = append(sidebar[sportName], league)
 		}
 	}

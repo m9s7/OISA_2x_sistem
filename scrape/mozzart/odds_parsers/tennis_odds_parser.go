@@ -1,52 +1,44 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/scrape/mozzart/requests_to_server"
+	"OISA_2x_sistem/requests_to_server/mozzart"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"strconv"
 	"strings"
 )
 
-func TennisOddsParser(sportID int, allSubgamesResponse map[string]interface{}) []*[8]string {
+func TennisOddsParser(sportID int, allSubgamesResponse map[string][]mozzart.Offer) []*[8]string {
 
 	matchesScrapedCounter := 0
 	var export []*[8]string
 
-	matchesResponse := requests_to_server.GetMatchIDsBlocking(sportID)
-	exportHelp := initExportHelp(matchesResponse["matches"].([]interface{}))
+	matchesResponse, _ := mozzart.GetMatchIDs(sportID)
+	exportHelp := initExportHelp(matchesResponse.Matches)
 
-	var exportHelpKeys []int
+	var matchIDs []int
 	for k := range exportHelp {
-		exportHelpKeys = append(exportHelpKeys, k)
+		matchIDs = append(matchIDs, k)
 	}
 
 	focusedSubgames := []string{"ki", "1s", "ug1s", "ug2s", "tb"}
 	subgameIDs := getIDsForSubgameNames(allSubgamesResponse[strconv.Itoa(sportID)], focusedSubgames)
-	odds := requests_to_server.GetOddsBlocking(exportHelpKeys, subgameIDs)
+	odds := mozzart.GetOdds(matchIDs, subgameIDs)
 
-	for _, o := range odds {
-		if _, ok := o["kodds"]; !ok {
+	for _, matchOdds := range odds {
+
+		if matchOdds.Kodds == nil {
 			continue
 		}
 
-		matchID := int(o["id"].(float64))
-		e1 := exportHelp[matchID]
+		e1 := exportHelp[matchOdds.Id]
 		exportMatchHelper := map[string]*[4]string{}
 
-		for _, sg := range o["kodds"].(map[string]interface{}) {
-			sg, ok := sg.(map[string]interface{})
-			if !ok {
-				continue
-			}
-			_, ok = sg["subGame"]
-			if !ok {
-				continue
-			}
+		for _, subgameOdds := range matchOdds.Kodds {
 
-			game := sg["subGame"].(map[string]interface{})["gameShortName"].(string)
-			subgame := sg["subGame"].(map[string]interface{})["subGameName"].(string)
-			val := sg["value"].(string)
+			game := subgameOdds.SubGame.GameShortName
+			subgame := subgameOdds.SubGame.SubGameName
+			val := subgameOdds.Value
 
 			if game == "ki" || game == "1s" {
 				var exportMatchHelperKeys []string
@@ -89,6 +81,7 @@ func TennisOddsParser(sportID int, allSubgamesResponse map[string]interface{}) [
 					continue
 				}
 			}
+			
 		}
 
 		for _, e2 := range exportMatchHelper {

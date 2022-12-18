@@ -1,51 +1,41 @@
 package server_response_parsers
 
-func GetSportNameByIDMap(masterData map[string]interface{}) map[int]string {
+import "OISA_2x_sistem/requests_to_server/soccerbet"
+
+func GetSportNameByID(masterData *soccerbet.MasterData) map[int]string {
 	result := map[int]string{}
 
-	competitionsData := masterData["CompetitionsData"].(map[string]interface{})
-	sports := competitionsData["Sports"].([]interface{})
-	for _, sport := range sports {
-		sport := sport.(map[string]interface{})
-		result[int(sport["Id"].(float64))] = sport["Name"].(string)
+	for _, sport := range masterData.CompetitionsData.Sports {
+		result[sport.Id] = sport.Name
 	}
 	return result
 }
 
-func GetBetgameByIdMap(masterData map[string]interface{}) map[int]map[string]interface{} {
-	result := map[int]map[string]interface{}{}
+func GetBetgameById(masterData *soccerbet.MasterData) map[int]*soccerbet.Betgame {
+	result := map[int]*soccerbet.Betgame{}
 
-	betGameOutcomesData := masterData["BetGameOutcomesData"].(map[string]interface{})
-	betGames := betGameOutcomesData["BetGames"].([]interface{})
-	for _, betGame := range betGames {
-		betGame := betGame.(map[string]interface{})
-		betGameID := int(betGame["Id"].(float64))
-		result[betGameID] = betGame
+	for _, betGame := range masterData.BetGameOutcomesData.BetGames {
+		result[betGame.Id] = &betGame
 	}
+
 	return result
 }
 
-func GetBetgameOutcomeByIdMap(masterData map[string]interface{}) map[int]map[string]interface{} {
-	result := map[int]map[string]interface{}{}
+func GetBetgameOutcomeById(masterData *soccerbet.MasterData) map[int]*soccerbet.BetgameOutcome {
+	result := map[int]*soccerbet.BetgameOutcome{}
 
-	betGameOutcomesData := masterData["BetGameOutcomesData"].(map[string]interface{})
-	betGameOutcomes := betGameOutcomesData["BetGameOutcomes"].([]interface{})
-	for _, betGameOutcome := range betGameOutcomes {
-		betGameOutcome := betGameOutcome.(map[string]interface{})
-		betGameOutcomeID := int(betGameOutcome["Id"].(float64))
-		result[betGameOutcomeID] = betGameOutcome
+	for _, betGameOutcome := range masterData.BetGameOutcomesData.BetGameOutcomes {
+		result[betGameOutcome.Id] = &betGameOutcome
 	}
+
 	return result
 }
 
-func GetBetgameGroupByIdMap(masterData map[string]interface{}) map[int]map[string]interface{} {
-	result := map[int]map[string]interface{}{}
-	betGameOutcomesData := masterData["BetGameOutcomesData"].(map[string]interface{})
-	betGameGroups := betGameOutcomesData["BetGameGroups"].([]interface{})
-	for _, betGameGroup := range betGameGroups {
-		betGameGroup := betGameGroup.(map[string]interface{})
-		betGameGroupID := int(betGameGroup["Id"].(float64))
-		result[betGameGroupID] = betGameGroup
+func GetBetgameGroupById(masterData *soccerbet.MasterData) map[int]*soccerbet.BetgameGroup {
+	result := map[int]*soccerbet.BetgameGroup{}
+
+	for _, betGameGroup := range masterData.BetGameOutcomesData.BetGameGroups {
+		result[betGameGroup.Id] = &betGameGroup
 	}
 	return result
 }

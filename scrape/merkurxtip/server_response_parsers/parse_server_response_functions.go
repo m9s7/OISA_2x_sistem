@@ -3,9 +3,29 @@ package server_response_parsers
 func ParseGetSidebarSports(response map[string]interface{}) map[string]string {
 
 	sidebarSportIDByName := map[string]string{}
-	for _, sport := range response["categories"].([]interface{}) {
-		sport := sport.(map[string]interface{})
-		sidebarSportIDByName[sport["name"].(string)] = sport["id"].(string)
+
+	categories, ok := response["categories"].([]interface{})
+	if !ok {
+		return nil
+	}
+
+	for _, sport := range categories {
+		sport, ok := sport.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		sportName, ok := sport["name"].(string)
+		if !ok {
+			continue
+		}
+
+		sportID, ok := sport["id"].(string)
+		if !ok {
+			continue
+		}
+
+		sidebarSportIDByName[sportName] = sportID
 	}
 	return sidebarSportIDByName
 }
@@ -21,6 +41,8 @@ func ParseGetSidebarGroups(response map[string]interface{}) []string {
 	}
 	return groupIDs
 }
+
+// TODO: add checking for casting from interface and print those structures when they fail, EVERYWHERE
 
 func ParseGetSidebarSportGroupLeagues(response map[string]interface{}) []string {
 	var leagueIDs []string

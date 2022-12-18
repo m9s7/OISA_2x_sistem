@@ -1,8 +1,7 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/scrape/soccerbet/requests_to_server"
-	"OISA_2x_sistem/scrape/soccerbet/server_response_parsers"
+	"OISA_2x_sistem/requests_to_server/soccerbet"
 	"OISA_2x_sistem/utility"
 	"errors"
 	"fmt"
@@ -16,31 +15,27 @@ var goloviSubgames = []string{"Ukupno Golova", "I Pol. Uk. Golova", "II Pol. Uk.
 	"Gost Ukupno Golova", "I Pol. Gost Uk. Golova", "II Pol. Gost Uk. Golova"}
 
 func SoccerOddsParser(
-	sidebarLeagues []interface{},
-	betgameByIdMap map[int]map[string]interface{},
-	betgameOutcomeByIdMap map[int]map[string]interface{},
-	betgameGroupByIdMap map[int]map[string]interface{},
+	sidebarLeagues []soccerbet.CompetitionMasterData,
+	betgameByIdMap map[int]*soccerbet.Betgame,
+	betgameOutcomeByIdMap map[int]*soccerbet.BetgameOutcome,
+	betgameGroupByIdMap map[int]*soccerbet.BetgameGroup,
 ) []*[8]string {
 
 	matchesScrapedCounter := 0
 	var export []*[8]string
 
 	for _, league := range sidebarLeagues {
-		league := league.(map[string]interface{})
-		leagueID := int(league["Id"].(float64))
 
-		response := requests_to_server.GetLeagueMatchesInfo(leagueID)
-		if response == nil {
-			fmt.Println("Soccerbet: GetLeagueMatchesInfo(leagueID:" + strconv.Itoa(leagueID) + ") is None, skipping it..")
+		matchesInfo, err := soccerbet.GetLeagueMatchesInfo(league.Id)
+		if err != nil {
+			fmt.Println("Soccerbet: GetLeagueMatchesInfo(leagueID:" + strconv.Itoa(league.Id) + ") is None, skipping it..")
 			continue
 		}
-		matchInfoList := server_response_parsers.ParseGetLeagueMatchesInfo(response)
 
-		for _, match := range matchInfoList {
-			e1 := &[4]string{match["kickoff"].(string), league["Name"].(string), match["home"].(string), match["away"].(string)}
+		for _, match := range matchesInfo {
+			e1 := &[4]string{match.StartDate, league.Name, match.HomeCompetitorName, match.AwayCompetitorName}
 
-			matchID := int(match["match_id"].(float64))
-			tip1, tip2, err := parseMatchTips(matchID, betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
+			tip1, tip2, err := parseMatchTips(match.Id, betgameByIdMap, betgameOutcomeByIdMap, betgameGroupByIdMap)
 			if err != nil {
 				continue
 			}
@@ -121,12 +116,12 @@ func SoccerOddsParser(
 
 func parseMatchTips(
 	matchID int,
-	betgameByIdMap map[int]map[string]interface{},
-	betgameOutcomeByIdMap map[int]map[string]interface{},
-	betgameGroupByIdMap map[int]map[string]interface{}) (map[[3]string]float64, map[[3]string]float64, error) {
+	betgameByIdMap map[int]*soccerbet.Betgame,
+	betgameOutcomeByIdMap map[int]*soccerbet.BetgameOutcome,
+	betgameGroupByIdMap map[int]*soccerbet.BetgameGroup) (map[[3]string]float64, map[[3]string]float64, error) {
 
-	matchOdds := requests_to_server.GetMatchOddsValues(matchID)
-	if matchOdds == nil {
+	matchOdds, err := soccerbet.GetMatchOddsValues(matchID)
+	if err != nil {
 		fmt.Println("Soccerbet: GetMatchOddsValues(matchID:" + strconv.Itoa(matchID) + ") is None, skipping it..")
 		return nil, nil, errors.New("skipping match")
 	}
@@ -135,45 +130,41 @@ func parseMatchTips(
 	tip2 := map[[3]string]float64{}
 
 	for _, odds := range matchOdds {
-		if !odds["IsEnabled"].(bool) {
+		if !odds.IsEnabled {
 			continue
 		}
 
-		outcome := betgameOutcomeByIdMap[int(odds["BetGameOutcomeId"].(float64))]
-		betgame := betgameByIdMap[int(outcome["BetGameId"].(float64))]
-		betgameGroup := betgameGroupByIdMap[int(betgame["BetGameGroupId"].(float64))]
-
-		betgameName := betgame["Name"].(string)
-		betgameGroupName := betgameGroup["Name"].(string)
-		outcomeName := outcome["Name"].(string)
+		outcome := betgameOutcomeByIdMap[odds.BetGameOutcomeId]
+		betgame := betgameByIdMap[outcome.BetGameId]
+		betgameGroup := betgameGroupByIdMap[betgame.BetGameGroupId]
 
 		tipKey := [3]string{
-			betgameName,
-			outcomeName,
-			outcome["CodeForPrinting"].(string),
+			betgame.Name,
+			outcome.Name,
+			outcome.CodeForPrinting,
 		}
-		tipVal := odds["Odds"].(float64)
+		tipVal := odds.Odds
 
 		// GG/NG - GG1/2 is never offered
-		if betgameGroupName == "OBA TIMA DAJU GOL" && betgameName == "Oba Tima Daju Gol" {
-			if outcomeName == "GG" {
+		if betgameGroup.Name == "OBA TIMA DAJU GOL" && betgame.Name == "Oba Tima Daju Gol" {
+			if outcome.Name == "GG" {
 				tip1[tipKey] = tipVal
 			}
-			if outcomeName == "NG" {
+			if outcome.Name == "NG" {
 				tip2[tipKey] = tipVal
 			}
 			continue
 		}
 		// UKUPNO GOLOVA
-		if betgameGroupName != "UKUPNO GOLOVA" &&
-			betgameGroupName != "DOMAĆIN UK. GOLOVA" &&
-			betgameGroupName != "GOST UK. GOLOVA" {
+		if betgameGroup.Name != "UKUPNO GOLOVA" &&
+			betgameGroup.Name != "DOMAĆIN UK. GOLOVA" &&
+			betgameGroup.Name != "GOST UK. GOLOVA" {
 			continue
 		}
-		if utility.IsElInSliceSTR(betgameName, goloviSubgames) {
-			if strings.HasPrefix(outcomeName, "0-") || outcomeName == "0" {
+		if utility.IsElInSliceSTR(betgame.Name, goloviSubgames) {
+			if strings.HasPrefix(outcome.Name, "0-") || outcome.Name == "0" {
 				tip1[tipKey] = tipVal
-			} else if strings.HasSuffix(outcomeName, "+") {
+			} else if strings.HasSuffix(outcome.Name, "+") {
 				tip2[tipKey] = tipVal
 			}
 		}
