@@ -53,7 +53,7 @@ func main() {
 	//	//telegram.BroadcastToPremium(arbitrage.ToStringPremium(arbitrage.GetExampleArbitrage(), "EXAMPLE SPORT"))
 	//}
 
-	export := soccerbet.Scrape(utility.Basketball)
+	export := soccerbet.Scrape(utility.Soccer)
 	for _, e := range export {
 		fmt.Println(*e)
 	}

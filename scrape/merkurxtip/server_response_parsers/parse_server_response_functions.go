@@ -1,33 +1,30 @@
 package server_response_parsers
 
-func ParseGetSidebarSports(response map[string]interface{}) map[string]string {
+import (
+	"OISA_2x_sistem/requests_to_server/merkurxtip"
+	"fmt"
+)
+
+func ParseGetSidebarSports(response *merkurxtip.Sidebar) map[string]string {
 
 	sidebarSportIDByName := map[string]string{}
 
-	categories, ok := response["categories"].([]interface{})
-	if !ok {
+	for _, sport := range response.Categories {
+		sidebarSportIDByName[sport.Name] = sport.Id
+	}
+
+	return sidebarSportIDByName
+}
+
+func GetSidebarSportsIDsByName() map[string]string {
+	response, err := merkurxtip.GetSidebarSports()
+	if err != nil {
+		fmt.Println(err)
 		return nil
 	}
+	sidebarSportsIDsByName := ParseGetSidebarSports(response)
 
-	for _, sport := range categories {
-		sport, ok := sport.(map[string]interface{})
-		if !ok {
-			continue
-		}
-
-		sportName, ok := sport["name"].(string)
-		if !ok {
-			continue
-		}
-
-		sportID, ok := sport["id"].(string)
-		if !ok {
-			continue
-		}
-
-		sidebarSportIDByName[sportName] = sportID
-	}
-	return sidebarSportIDByName
+	return sidebarSportsIDsByName
 }
 
 func ParseGetSidebarGroups(response map[string]interface{}) []string {

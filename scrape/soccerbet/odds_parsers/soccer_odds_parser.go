@@ -16,9 +16,9 @@ var goloviSubgames = []string{"Ukupno Golova", "I Pol. Uk. Golova", "II Pol. Uk.
 
 func SoccerOddsParser(
 	sidebarLeagues []soccerbet.CompetitionMasterData,
-	betgameByIdMap map[int]*soccerbet.Betgame,
-	betgameOutcomeByIdMap map[int]*soccerbet.BetgameOutcome,
-	betgameGroupByIdMap map[int]*soccerbet.BetgameGroup,
+	betgameByIdMap map[int]soccerbet.Betgame,
+	betgameOutcomeByIdMap map[int]soccerbet.BetgameOutcome,
+	betgameGroupByIdMap map[int]soccerbet.BetgameGroup,
 ) []*[8]string {
 
 	matchesScrapedCounter := 0
@@ -116,9 +116,9 @@ func SoccerOddsParser(
 
 func parseMatchTips(
 	matchID int,
-	betgameByIdMap map[int]*soccerbet.Betgame,
-	betgameOutcomeByIdMap map[int]*soccerbet.BetgameOutcome,
-	betgameGroupByIdMap map[int]*soccerbet.BetgameGroup) (map[[3]string]float64, map[[3]string]float64, error) {
+	betgameByIdMap map[int]soccerbet.Betgame,
+	betgameOutcomeByIdMap map[int]soccerbet.BetgameOutcome,
+	betgameGroupByIdMap map[int]soccerbet.BetgameGroup) (map[[3]string]float64, map[[3]string]float64, error) {
 
 	matchOdds, err := soccerbet.GetMatchOddsValues(matchID)
 	if err != nil {

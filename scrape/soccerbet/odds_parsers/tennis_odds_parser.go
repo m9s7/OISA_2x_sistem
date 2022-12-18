@@ -11,9 +11,9 @@ import (
 
 func TennisOddsParser(
 	sidebarLeagues []soccerbet.CompetitionMasterData,
-	betgameByIdMap map[int]*soccerbet.Betgame,
-	betgameOutcomeByIdMap map[int]*soccerbet.BetgameOutcome,
-	betgameGroupByIdMap map[int]*soccerbet.BetgameGroup,
+	betgameByIdMap map[int]soccerbet.Betgame,
+	betgameOutcomeByIdMap map[int]soccerbet.BetgameOutcome,
+	betgameGroupByIdMap map[int]soccerbet.BetgameGroup,
 ) []*[8]string {
 
 	matchesScrapedCounter := 0

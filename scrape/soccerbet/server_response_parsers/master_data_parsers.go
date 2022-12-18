@@ -11,31 +11,31 @@ func GetSportNameByID(masterData *soccerbet.MasterData) map[int]string {
 	return result
 }
 
-func GetBetgameById(masterData *soccerbet.MasterData) map[int]*soccerbet.Betgame {
-	result := map[int]*soccerbet.Betgame{}
+func GetBetgameById(masterData *soccerbet.MasterData) map[int]soccerbet.Betgame {
+	result := map[int]soccerbet.Betgame{}
 
 	for _, betGame := range masterData.BetGameOutcomesData.BetGames {
-		result[betGame.Id] = &betGame
+		result[betGame.Id] = betGame
 	}
 
 	return result
 }
 
-func GetBetgameOutcomeById(masterData *soccerbet.MasterData) map[int]*soccerbet.BetgameOutcome {
-	result := map[int]*soccerbet.BetgameOutcome{}
+func GetBetgameOutcomeById(masterData *soccerbet.MasterData) map[int]soccerbet.BetgameOutcome {
+	result := map[int]soccerbet.BetgameOutcome{}
 
 	for _, betGameOutcome := range masterData.BetGameOutcomesData.BetGameOutcomes {
-		result[betGameOutcome.Id] = &betGameOutcome
+		result[betGameOutcome.Id] = betGameOutcome
 	}
 
 	return result
 }
 
-func GetBetgameGroupById(masterData *soccerbet.MasterData) map[int]*soccerbet.BetgameGroup {
-	result := map[int]*soccerbet.BetgameGroup{}
+func GetBetgameGroupById(masterData *soccerbet.MasterData) map[int]soccerbet.BetgameGroup {
+	result := map[int]soccerbet.BetgameGroup{}
 
 	for _, betGameGroup := range masterData.BetGameOutcomesData.BetGameGroups {
-		result[betGameGroup.Id] = &betGameGroup
+		result[betGameGroup.Id] = betGameGroup
 	}
 	return result
 }

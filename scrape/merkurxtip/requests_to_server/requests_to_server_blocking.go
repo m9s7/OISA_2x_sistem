@@ -5,65 +5,6 @@ import (
 	"log"
 )
 
-// TODO: Implement this and delete blocking functions everywhere
-
-// also what is this https://pkg.go.dev/net/http/httptest
-
-// TODO: if request with retries fails cut that bookie out from main, turn it off
-// https://brandur.org/fragments/go-http-retry
-
-//package main
-//
-//import (
-//    "fmt"
-//    "io/ioutil"
-//    "log"
-//    "net/http"
-//)
-//
-//func main() {
-//    var (
-//        err      error
-//        response *http.Response
-//        retries  int = 3
-//    )
-//    for retries > 0 {
-//        response, err = http.Get("https://non-existent")
-//        // response, err = http.Get("https://google.com/robots.txt")
-//        if err != nil {
-//            log.Println(err)
-//            retries -= 1
-//        } else {
-//            break
-//        }
-//    }
-//    if response != nil {
-//        defer response.Body.Close()
-//        data, err := ioutil.ReadAll(response.Body)
-//        if err != nil {
-//            log.Fatal(err)
-//        }
-//        fmt.Printf("data = %s\n", data)
-//    }
-//}
-
-func GetSidebarSportsBlocking() map[string]interface{} {
-
-	response := GetSidebarSports()
-
-	for i := 0; i < settings.NumOfTries; i++ {
-
-		if response != nil {
-			break
-		}
-
-		log.Println("Merkurxtip: Stuck on GetSidebarSports()...")
-		response = GetSidebarSports()
-	}
-
-	return response
-}
-
 func GetAllSubgamesBlocking() map[string]interface{} {
 
 	response := GetAllSubgames()

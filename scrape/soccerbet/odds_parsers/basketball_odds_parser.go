@@ -11,9 +11,9 @@ import (
 
 func BasketballOddsParser(
 	sidebarLeagues []soccerbet.CompetitionMasterData,
-	betgameByIdMap map[int]*soccerbet.Betgame,
-	betgameOutcomeByIdMap map[int]*soccerbet.BetgameOutcome,
-	betgameGroupByIdMap map[int]*soccerbet.BetgameGroup,
+	betgameByIdMap map[int]soccerbet.Betgame,
+	betgameOutcomeByIdMap map[int]soccerbet.BetgameOutcome,
+	betgameGroupByIdMap map[int]soccerbet.BetgameGroup,
 ) []*[8]string {
 
 	matchesScrapedCounter := 0
@@ -52,7 +52,6 @@ func BasketballOddsParser(
 				if betgameGroup.Name != "MEČ" || betgame.Name != "Konačni Ishod" {
 					continue
 				}
-				fmt.Println(betgameGroup.Name, betgame.Name)
 
 				var exportMatchHelperKeys []string
 				for key := range exportMatchHelper {
