@@ -13,7 +13,12 @@ func TennisOddsParser(sportID int, allSubgamesResponse map[string][]mozzart.Offe
 	matchesScrapedCounter := 0
 	var export []*[8]string
 
-	matchesResponse, _ := mozzart.GetMatchIDs(sportID)
+	matchesResponse, err := mozzart.GetMatchIDs(sportID)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
 	exportHelp := initExportHelp(matchesResponse.Matches)
 
 	var matchIDs []int
@@ -81,7 +86,7 @@ func TennisOddsParser(sportID int, allSubgamesResponse map[string][]mozzart.Offe
 					continue
 				}
 			}
-			
+
 		}
 
 		for _, e2 := range exportMatchHelper {

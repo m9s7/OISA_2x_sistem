@@ -27,14 +27,18 @@ func GetSportsCurrentlyOffered() []string {
 func Scrape(sport string) []*[8]string {
 	startTime := time.Now()
 
-	response, _ := mozzart.GetSidebar()
+	response, err := mozzart.GetSidebar()
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
 
 	sportIDByName := server_response_parsers.GetSportIDByNameMap(response)
 
-	allSubgamesResponse, _ := mozzart.GetAllSubgames()
-	for response == nil {
+	allSubgamesResponse, err := mozzart.GetAllSubgames()
+	for err != nil {
 		fmt.Println("Mozzart: Stuck on GetAllSubgames()...")
-		allSubgamesResponse, _ = mozzart.GetAllSubgames()
+		allSubgamesResponse, err = mozzart.GetAllSubgames()
 	}
 
 	if _, ok := sportIDByName[sport]; !ok {

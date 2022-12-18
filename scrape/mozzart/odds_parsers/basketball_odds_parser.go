@@ -13,7 +13,11 @@ func BasketballOddsParser(sportID int, allSubgamesResponse map[string][]mozzart.
 	matchesScrapedCounter := 0
 	var export []*[8]string
 
-	matchesResponse, _ := mozzart.GetMatchIDs(sportID)
+	matchesResponse, err := mozzart.GetMatchIDs(sportID)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
 	exportHelp := initExportHelp(matchesResponse.Matches)
 
 	var matchIDs []int
