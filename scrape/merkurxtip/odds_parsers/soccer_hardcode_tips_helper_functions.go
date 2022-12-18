@@ -1,7 +1,8 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/scrape/merkurxtip/requests_to_server"
+	"OISA_2x_sistem/requests_to_server/merkurxtip"
+	"fmt"
 	"strings"
 )
 
@@ -106,31 +107,31 @@ func _() (map[string]int, map[string]int) {
 
 	tip1Format, tip2Format := getSoccerTipFormats()
 
-	allSubgames := requests_to_server.GetAllSubgamesBlocking()
-	betPickMap := allSubgames["betPickMap"].(map[string]interface{})
+	allSubgames, err := merkurxtip.GetAllSubgames()
+	if err != nil {
+		fmt.Println(err)
+		return nil, nil
+	}
 
-	for k, v := range betPickMap {
+	for k, v := range allSubgames.BetPickMap {
+
 		if !strings.HasSuffix(k, "_S") {
 			continue
 		}
-		v := v.(map[string]interface{})
 
-		tipTypeName := v["tipTypeName"].(string)
-		tipCode := int(v["tipTypeCode"].(float64))
-
-		if !strings.HasPrefix(tipTypeName, "G") {
+		if !strings.HasPrefix(v.TipTypeName, "G") {
 			continue
 		}
 
 		for _, format := range tip1Format {
-			if isTipFormat(tipTypeName, format) {
-				tip1[tipTypeName] = tipCode
+			if isTipFormat(v.TipTypeName, format) {
+				tip1[v.TipTypeName] = v.TipTypeCode
 				break
 			}
 		}
 		for _, format := range tip2Format {
-			if isTipFormat(tipTypeName, format) {
-				tip2[tipTypeName] = tipCode
+			if isTipFormat(v.TipTypeName, format) {
+				tip2[v.TipTypeName] = v.TipTypeCode
 				break
 			}
 		}

@@ -1,8 +1,8 @@
 package merkurxtip
 
 import (
+	"OISA_2x_sistem/requests_to_server/merkurxtip"
 	"OISA_2x_sistem/scrape/merkurxtip/odds_parsers"
-	"OISA_2x_sistem/scrape/merkurxtip/requests_to_server"
 	"OISA_2x_sistem/scrape/merkurxtip/server_response_parsers"
 	"OISA_2x_sistem/scrape/merkurxtip/standardization"
 	"OISA_2x_sistem/utility"
@@ -23,25 +23,27 @@ func GetSportsCurrentlyOffered() []string {
 
 func getMatchIDs(sport string) []int {
 
-	sidebarSportIDByName := server_response_parsers.GetSidebarSportsIDsByName()
+	var matchIDs []int
 
+	sidebarSportIDByName := server_response_parsers.GetSidebarSportsIDsByName()
 	sportID := sidebarSportIDByName[sport]
 
-	response := requests_to_server.GetSidebarSportGroupsBlocking(sportID)
+	response, err := merkurxtip.GetSidebarSportGroups(sportID)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
 	groupIDs := server_response_parsers.ParseGetSidebarGroups(response)
 
-	var leagueIDs []string
 	for _, groupID := range groupIDs {
-		response = requests_to_server.GetSidebarSportGroupLeaguesBlocking(sportID, groupID)
-		groupLeagueIDs := server_response_parsers.ParseGetSidebarSportGroupLeagues(response)
-		leagueIDs = append(leagueIDs, groupLeagueIDs...)
-	}
+		getMatchIDsResponse, err := merkurxtip.GetMatchIDs(sportID, groupID)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
 
-	var matchIDs []int
-	for _, leagueID := range leagueIDs {
-		response = requests_to_server.GetMatchIDsBlocking(sportID, leagueID)
-		leagueMatchIDs := server_response_parsers.ParseGetMatchIDs(response)
-		matchIDs = append(matchIDs, leagueMatchIDs...)
+		groupMatchIDs := server_response_parsers.ParseGetMatchIDs(getMatchIDsResponse)
+		matchIDs = append(matchIDs, groupMatchIDs...)
 	}
 
 	return matchIDs
@@ -53,6 +55,7 @@ func Scrape(sport string) []*[8]string {
 
 	// Don't need it all subgames are hardcoded
 	//allSubgames := requests_to_server.GetAllSubgamesBlocking()
+	
 	matchIDs := getMatchIDs(sport)
 
 	var odds []*[8]string

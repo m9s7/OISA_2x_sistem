@@ -6,18 +6,19 @@ import (
 	"net/http"
 )
 
-type AllSubgamesResponse struct {
-	BetPickMap map[string]BetPick
+type SidebarSportGroupsResponse struct {
+	Categories []Group
 }
 
-type BetPick struct {
-	TipTypeCode int
-	TipTypeName string
+type Group struct {
+	Id    string
+	Type  string
+	Count int
 }
 
-func getAllSubgamesNoRetry() (*AllSubgamesResponse, error) {
+func getSidebarSportGroupsNoRetry(sportID string) (*SidebarSportGroupsResponse, error) {
 
-	url := "https://www.merkurxtip.rs/restapi/offer/sr/ttg_lang?locale=sr"
+	url := "https://www.merkurxtip.rs/restapi/offer/sr/categories/sport/" + sportID + "/g?locale=sr"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -32,7 +33,7 @@ func getAllSubgamesNoRetry() (*AllSubgamesResponse, error) {
 	req.Header.Add("sec-fetch-mode", "cors")
 	req.Header.Add("sec-fetch-site", "same-origin")
 
-	var response AllSubgamesResponse
+	var response SidebarSportGroupsResponse
 	err = requests_to_server.GetJson(requests_to_server.Merkurxtip, req, &response)
 	if err != nil {
 		fmt.Println(err)
@@ -42,16 +43,16 @@ func getAllSubgamesNoRetry() (*AllSubgamesResponse, error) {
 	return &response, nil
 }
 
-func GetAllSubgames() (*AllSubgamesResponse, error) {
+func GetSidebarSportGroups(sportID string) (*SidebarSportGroupsResponse, error) {
 	for i := requests_to_server.RetryStrategy.Start(); ; {
 
-		response, err := getAllSubgamesNoRetry()
+		response, err := getSidebarSportGroupsNoRetry(sportID)
 		if err == nil {
 			return response, nil
 		}
 
 		if !i.Next(nil) {
-			return nil, fmt.Errorf("error getting all subgames after %d tries: %v", i.Count(), err)
+			return nil, fmt.Errorf("error getting sidebar sport groups after %d tries: %v", i.Count(), err)
 		}
 
 	}

@@ -11,6 +11,8 @@ import (
 
 var Mozzart = httpClient()
 var Maxbet = httpClient()
+var Merkurxtip = httpClient()
+var Soccerbet = httpClient()
 
 func httpClient() *http.Client {
 

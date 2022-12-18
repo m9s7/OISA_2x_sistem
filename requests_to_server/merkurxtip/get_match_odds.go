@@ -4,20 +4,23 @@ import (
 	"OISA_2x_sistem/requests_to_server"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
-type AllSubgamesResponse struct {
-	BetPickMap map[string]BetPick
+type Match struct {
+	Id          int
+	Home        string
+	Away        string
+	KickOffTime float64
+	Blocked     bool
+	Odds        map[string]float64
+	LeagueName  string
+	LeagueShort string
 }
 
-type BetPick struct {
-	TipTypeCode int
-	TipTypeName string
-}
+func getMatchOddsNoRetry(matchID int) (*Match, error) {
 
-func getAllSubgamesNoRetry() (*AllSubgamesResponse, error) {
-
-	url := "https://www.merkurxtip.rs/restapi/offer/sr/ttg_lang?locale=sr"
+	url := "https://www.merkurxtip.rs/restapi/offer/sr/match/" + strconv.Itoa(matchID) + "?locale=sr"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -32,7 +35,7 @@ func getAllSubgamesNoRetry() (*AllSubgamesResponse, error) {
 	req.Header.Add("sec-fetch-mode", "cors")
 	req.Header.Add("sec-fetch-site", "same-origin")
 
-	var response AllSubgamesResponse
+	var response Match
 	err = requests_to_server.GetJson(requests_to_server.Merkurxtip, req, &response)
 	if err != nil {
 		fmt.Println(err)
@@ -42,16 +45,16 @@ func getAllSubgamesNoRetry() (*AllSubgamesResponse, error) {
 	return &response, nil
 }
 
-func GetAllSubgames() (*AllSubgamesResponse, error) {
+func GetMatchOdds(matchID int) (*Match, error) {
 	for i := requests_to_server.RetryStrategy.Start(); ; {
 
-		response, err := getAllSubgamesNoRetry()
+		response, err := getMatchOddsNoRetry(matchID)
 		if err == nil {
 			return response, nil
 		}
 
 		if !i.Next(nil) {
-			return nil, fmt.Errorf("error getting all subgames after %d tries: %v", i.Count(), err)
+			return nil, fmt.Errorf("error getting match odds after %d tries: %v", i.Count(), err)
 		}
 
 	}

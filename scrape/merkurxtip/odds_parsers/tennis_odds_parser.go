@@ -1,7 +1,7 @@
 package odds_parsers
 
 import (
-	"OISA_2x_sistem/scrape/merkurxtip/requests_to_server"
+	"OISA_2x_sistem/requests_to_server/merkurxtip"
 	"OISA_2x_sistem/utility"
 	"fmt"
 	"strconv"
@@ -40,29 +40,25 @@ func TennisOddsParser(matchIDs []int) []*[8]string {
 	}
 
 	for _, matchID := range matchIDs {
-		match := requests_to_server.GetMatchOdds(matchID)
-		if match == nil {
+		match, err := merkurxtip.GetMatchOdds(matchID)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		if err != nil {
 			fmt.Println("Merkurxtip: GetMatchOdds(matchID:" + strconv.Itoa(matchID) + ") is None, skipping it..")
 			continue
 		}
 
-		if !checkIfMapHasFields(match, []string{"kickOffTime", "leagueName", "home", "away", "odds"}) {
-			fmt.Println("Merkurxtip: GetMatchOdds(matchID:" + strconv.Itoa(matchID) + ") has missing field, skipping it..")
-			continue
-		}
-		if !checkIfMapHasInterfaces(match, []string{"kickOffTime", "leagueName", "home", "away", "odds"}) {
-			fmt.Println("Merkurxtip: GetMatchOdds(matchID:" + strconv.Itoa(matchID) + ") has missing interface, skipping it..")
-			continue
-		}
-
 		e1 := &[4]string{
-			fmt.Sprintf("%.0f", match["kickOffTime"].(float64)),
-			match["leagueName"].(string),
-			match["home"].(string),
-			match["away"].(string),
+			fmt.Sprintf("%.0f", match.KickOffTime),
+			match.LeagueName,
+			match.Home,
+			match.Away,
 		}
 
-		getTipValByTipTypeCode := match["odds"].(map[string]interface{})
+		getTipValByTipTypeCode := match.Odds
 		for tip1Code, m := range tipTypeCodePairs {
 
 			tip1Val, ok := getTipValByTipTypeCode[tip1Code]
@@ -75,8 +71,8 @@ func TennisOddsParser(matchIDs []int) []*[8]string {
 			}
 
 			export = append(export, utility.MergeE1E2(e1, &[4]string{
-				m["tip1Name"], fmt.Sprintf("%.2f", tip1Val.(float64)),
-				m["tip2Name"], fmt.Sprintf("%.2f", tip2Val.(float64)),
+				m["tip1Name"], fmt.Sprintf("%.2f", tip1Val),
+				m["tip2Name"], fmt.Sprintf("%.2f", tip2Val),
 			}))
 		}
 		matchesScrapedCounter++

@@ -33,7 +33,7 @@ func getSidebarSportsNoRetry() (*Sidebar, error) {
 	req.Header.Add("sec-fetch-site", "same-origin")
 
 	var response Sidebar
-	err = requests_to_server.GetJson(requests_to_server.Mozzart, req, &response)
+	err = requests_to_server.GetJson(requests_to_server.Merkurxtip, req, &response)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err

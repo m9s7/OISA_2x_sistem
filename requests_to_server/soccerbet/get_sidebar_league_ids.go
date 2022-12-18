@@ -29,7 +29,7 @@ func getSidebarLeagueIDsNoRetry() ([]SidebarLeagueId, error) {
 	req.Header.Add("X-Requested-With", "XMLHttpRequest")
 
 	var response []SidebarLeagueId
-	err = requests_to_server.GetJson(requests_to_server.Mozzart, req, &response)
+	err = requests_to_server.GetJson(requests_to_server.Soccerbet, req, &response)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
