@@ -70,6 +70,7 @@ func broadcastNewArbs(arbs []arbitrage.Arb, sport string) {
 			continue
 		}
 
+		find_arbs.LogArbToExcelFile(&arb)
 		if arb.ROI <= 1.5 {
 			telegram.BroadcastToFree(arb.ToStringFree())
 		}
