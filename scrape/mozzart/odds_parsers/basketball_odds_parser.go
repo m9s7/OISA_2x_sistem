@@ -56,12 +56,10 @@ func BasketballOddsParser(sportID int, allSubgamesResponse map[string][]mozzart.
 				if subgame == "1" {
 					exportMatchHelper[game][0] = game + " " + subgame
 					exportMatchHelper[game][1] = val
-				} else if subgame == "2" {
+				}
+				if subgame == "2" {
 					exportMatchHelper[game][2] = game + " " + subgame
 					exportMatchHelper[game][3] = val
-				} else {
-					fmt.Println("Mozzart: Two-outcome game with third outcome" + game + subgame + "found, value=" + val)
-					continue
 				}
 			}
 

@@ -63,16 +63,20 @@ func bookieToLaBL(bookie string) string {
 
 func tipDeviation(tipIdx int, tipVals []float64) float64 {
 	deviation := 0.0
+
+	count := 0
 	tipVal := tipVals[tipIdx]
 
 	for i := range tipVals {
-		if i == tipIdx {
+		if i == tipIdx || tipVals[i] == 0.0 {
 			continue
 		}
 
 		deviation += math.Abs(tipVal - tipVals[i])
+		count++
 	}
-	return deviation / float64(len(tipVals)-1)
+
+	return deviation / float64(count)
 }
 
 func parseTipValsAndGetMaxValIdx(tipVals []string) ([]float64, int) {

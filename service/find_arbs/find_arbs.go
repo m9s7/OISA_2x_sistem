@@ -99,7 +99,7 @@ func FindArb(records [][]string, sport string) []arbitrage.Arb {
 			ROI:       utility.ToFixed(100*((1/outlay)-1), 2),
 		}
 
-		fmt.Printf(a.ToStringWithExtra())
+		//fmt.Printf(a.ToStringWithExtra())
 		arbs = append(arbs, a)
 	}
 

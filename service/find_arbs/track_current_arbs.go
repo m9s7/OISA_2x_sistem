@@ -9,6 +9,7 @@ import (
 )
 
 var OldArbsBySport map[string][]arbitrage.Arb
+var TodaysArbs []arbitrage.Arb
 
 var fileName = "arbs_log.xlsx"
 var sheetName = "log_all"

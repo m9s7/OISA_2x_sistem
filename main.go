@@ -31,6 +31,7 @@ func main() {
 		utility.Basketball: nil,
 		utility.Soccer:     nil,
 	}
+	find_arbs.TodaysArbs = []arbitrage.Arb{}
 
 	go service.ProvidePremiumService()
 	//fmt.Println(runtime.GOMAXPROCS(-1))
@@ -65,12 +66,15 @@ func broadcastNewArbs(arbs []arbitrage.Arb, sport string) {
 		find_arbs.OldArbsBySport[sport] = nil
 		return
 	}
+
 	for _, arb := range arbs {
-		if arb.IsIn(find_arbs.OldArbsBySport[sport]) || arb.ROI < 0.1 {
+		if arb.ROI < 0.1 || arb.IsIn(find_arbs.OldArbsBySport[sport]) || arb.IsIn(find_arbs.TodaysArbs) {
 			continue
 		}
 
 		find_arbs.LogArbToExcelFile(&arb)
+		find_arbs.TodaysArbs = append(find_arbs.TodaysArbs, arb)
+
 		if arb.ROI <= 1.5 {
 			telegram.BroadcastToFree(arb.ToStringFree())
 		}
