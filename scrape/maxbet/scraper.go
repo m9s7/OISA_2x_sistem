@@ -44,7 +44,6 @@ func Scrape(sport string) []*[8]string {
 
 	response, err := maxbet.GetMatchIDs(leagueIDs)
 	if err != nil {
-		// TODO: maybe just returning nil and trying again on the next iteration is satisfactory, fk turning it off and on again
 		fmt.Println(err)
 		return nil
 	}

@@ -1,6 +1,5 @@
 package utility
 
-// ExportIDX
 const (
 	Kickoff int = iota
 	League

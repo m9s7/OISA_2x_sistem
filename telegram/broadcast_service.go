@@ -95,13 +95,13 @@ func ReplyToMsg(reply string, msgID int, chatID int64) map[string]interface{} {
 }
 
 func BroadcastToFree(msg string) {
-	chatID := "-1001875397817"
+	chatID := "-1001875397817" //TODO: extract to config
 	response := BroadcastToTelegram(msg, chatID, "MarkdownV2")
 	CheckIfSent(response, msg, "free")
 }
 
 func BroadcastToDev(msg string, markdown string) {
-	chatID := "1678076367"
+	chatID := "1678076367" //TODO: extract to config
 	response := BroadcastToTelegram(msg, chatID, markdown)
 	CheckIfSent(response, msg, "dev")
 }
@@ -113,7 +113,7 @@ func BroadcastToPremium(msg string, premiumChats []string) {
 		CheckIfSent(response, msg, "service")
 	}
 
-	premiumChannel := "-1001701172026"
+	premiumChannel := "-1001701172026" //TODO: extract to config
 	response := BroadcastToTelegram(msg, premiumChannel, "MarkdownV2")
 	CheckIfSent(response, msg, "service")
 }

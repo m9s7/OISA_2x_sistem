@@ -48,7 +48,7 @@ func GetSportsCurrentlyOfferedAtEachBookie(bookies []string) map[string][]string
 	return sports
 }
 
-func ScrapeDataFromEachBookie(sportsAtBookie map[string][]string, sport string) map[string][]*[8]string {
+func GetDataFromEachBookie(sportsAtBookie map[string][]string, sport string) map[string][]*[8]string {
 
 	bookiesWaitGroup := sync.WaitGroup{}
 	scrapedData := map[string][]*[8]string{}
