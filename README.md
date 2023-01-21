@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/m9s7/OISA_2x_sistem/main/media/logo.jpg?token=GHSAT0AAAAAABZE6CZGEK3XJ73U7S23SAOCY6MAGFA" width="300" height="300">
-</p>
-
 # OISA_2x_sistem
 
 This is a software that offers a service of providing arbitrage opportunities to users via telegram messages. 
@@ -21,7 +17,7 @@ Sports and two outcome games supported are:
   
 Once a user is added to a telegram group, he starts recieveing messages like this:
 
-<img src="https://raw.githubusercontent.com/m9s7/OISA_2x_sistem/main/media/what_does_this_mean/origigi/1671719995940.jpg?token=GHSAT0AAAAAABZE6CZG7PFUFYPHZK3IVMQQY6MAHNQ" height="300">
+<img src="https://github.com/m9s7/OISA_2x_sistem/blob/main/media/what_does_this_mean/origigi/1671719995940.jpg?raw=true" height="300">
   
 Premium group users have 2 additional features
 - an arbitrage calculator (they reply to an arbitrage with how much they want to invest and they get how much to put on each outcome)
@@ -184,3 +180,7 @@ Play first @ maxbet
 ROI: 3.11%
 
 </pre>
+
+<p align="center">
+  <img src="https://github.com/m9s7/OISA_2x_sistem/blob/main/media/logo.jpg?raw=true" width="600" height="600">
+</p>
